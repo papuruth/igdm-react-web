@@ -1,8 +1,9 @@
 import axios from 'axios';
 import storage from '@/utils/storage';
+import { API_BASE_URL } from '@/utils/constants';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
 });
 
 api.interceptors.request.use((config) => {

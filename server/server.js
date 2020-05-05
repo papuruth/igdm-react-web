@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const routes = require('./routes/index');
 const instagram = require('./controllers/instagram');
+require('dotenv').config();
 
 const app = express();
 
@@ -32,6 +33,7 @@ function expressServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cors());
+  app.enable('trust proxy');
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
   app.use(express.static(path.join(__dirname, '../build')));
@@ -89,13 +91,20 @@ function expressServer() {
         throw error;
     }
   }
-
+  // ===== Handling production mode:
+  if (process.env.NODE_ENV === 'development') {
+    console.log('YOU ARE IN THE DEVELOPMENT ENV');
+    app.get('*', (req, res) => {
+      console.log(req.path);
+      res.sendFile('index.html', { root: path.resolve('../build') });
+    });
+  }
   // ===== Handling production mode:
   if (process.env.NODE_ENV === 'production') {
     console.log('YOU ARE IN THE PRODUCTION ENV');
     app.get('*', (req, res) => {
       console.log(req.path);
-      res.sendFile('index.html', { root: path.resolve('build') });
+      res.sendFile('index.html', { root: path.resolve('../build') });
     });
   }
 
