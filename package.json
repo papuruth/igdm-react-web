@@ -12,7 +12,7 @@
     "test": "craco test",
     "prettier": "prettier --write **/*.{js,jsx,json}",
     "lint": "eslint **/*.{js,jsx}",
-    "format": "yarn prettier && yarn lint --fix",
+    "format": "yarn lint --fix",
     "heroku-postbuild": "yarn install --prod && GENERATE_SOURCEMAP=false yarn build:prod"
   },
   "eslintConfig": {
