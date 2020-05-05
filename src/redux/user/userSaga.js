@@ -88,9 +88,10 @@ function* userLogout(action) {
   if (data.payload.status === 'ok') {
     yield sessionService.deleteSession();
     yield sessionService.deleteUser();
+    localStorage.removeItem('persist:root');
     data.user = action.payload;
     yield put(yield call(success, userConstants.USER_LOGOUT_SUCCESS, data));
-    history.push('/');
+    history.push('/login');
   } else {
     yield put(yield call(failure, userConstants.USER_LOGOUT_FAILURE, data));
   }
