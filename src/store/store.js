@@ -44,11 +44,13 @@ const options = {
 sagaMiddleware.run(sagas);
 sessionService
   .initSessionService(store, options)
-  .then(() => console.log('Redux React Session is ready and a session was refreshed from your storage'))
-  .catch(() => console.log('Redux React Session is ready and there is no session in your storage'));
+  .then(() =>
+    console.log(
+      'Redux React Session is ready and a session was refreshed from your storage',
+    ))
+  .catch(() =>
+    console.log(
+      'Redux React Session is ready and there is no session in your storage',
+    ));
 
-
-export {
-  store,
-  persistor,
-};
+export { store, persistor };

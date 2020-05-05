@@ -19,7 +19,11 @@ class MessageBox extends React.PureComponent {
       const doc = document.querySelector('.messages');
       doc.scrollBy(0, doc.scrollHeight);
       doc.addEventListener('scroll', (event) => {
-        if (event.target.scrollTop <= 0 && chat_.items && chat_.items.length >= 10) {
+        if (
+          event.target.scrollTop <= 0
+          && chat_.items
+          && chat_.items.length >= 10
+        ) {
           this.setState((state) => ({
             loading: !state.loading,
           }));
@@ -46,20 +50,18 @@ class MessageBox extends React.PureComponent {
           color="#123abc"
           loading={loading}
         />
-        {messages.length
-          ? messages.map((message) => (
+        {messages.length ? (
+          messages.map((message) => (
             <Message
               message={message}
               user={user}
               chat_={chat_}
               key={message.item_id}
             />
-          )) : (
-            <Message
-              user={user}
-              chat_={chat_}
-            />
-          )}
+          ))
+        ) : (
+          <Message user={user} chat_={chat_} />
+        )}
       </div>
     );
   }

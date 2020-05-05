@@ -3,14 +3,16 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "start": "craco start",
+    "start": "cd server && npm install && npm start",
+    "start:clent": "craco start",
     "build": "craco build",
     "server": "cd server && npm start",
-    "dev": "cross-env NODE_ENV=development npm-run-all --parallel start server",
+    "dev": "cross-env NODE_ENV=development npm-run-all --parallel start:clent server",
     "test": "craco test",
     "prettier": "prettier --write **/*.{js,jsx,json}",
     "lint": "eslint **/*.{js,jsx}",
-    "format": "yarn prettier && yarn lint --fix"
+    "format": "yarn prettier && yarn lint --fix",
+    "heroku-postbuild": "yarn install --prod && yarn build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -34,12 +36,13 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,jsx}": [
+    "**/*.{js,jsx,json}": [
       "yarn format",
       "git add ."
     ]
   },
   "dependencies": {
+    "@craco/craco": "^5.6.4",
     "@emotion/core": "^10.0.28",
     "@material-ui/core": "^4.9.11",
     "@material-ui/icons": "^4.9.1",
@@ -77,7 +80,6 @@
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
-    "@craco/craco": "^5.6.4",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-import-resolver-alias": "^1.1.2",

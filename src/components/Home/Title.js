@@ -67,7 +67,9 @@ class Title extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const { chat_, isMuted, newChatData, isUserBlocked } = props;
+    const {
+      chat_, isMuted, newChatData, isUserBlocked,
+    } = props;
     if (chat_ !== state.chat_ && !Object.keys(newChatData).length) {
       return {
         chat_,
@@ -89,7 +91,7 @@ class Title extends Component {
 
   componentDidMount() {
     const { chat_ } = this.props;
-    console.log(chat_)
+    console.log(chat_);
     const { muted } = chat_;
     const isUserBlocked = chat_.users
       ? chat_.users[0].friendship_status.blocking
@@ -100,9 +102,14 @@ class Title extends Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { isUserBlocked, dispatch, chat_, isChatDeleted } = this.props;
-    if ((isUserBlocked !== prevProps.isUserBlocked) || (isChatDeleted !== prevProps.isChatDeleted)) {
+  componentDidUpdate(prevProps) {
+    const {
+      isUserBlocked, dispatch, chat_, isChatDeleted,
+    } = this.props;
+    if (
+      isUserBlocked !== prevProps.isUserBlocked
+      || isChatDeleted !== prevProps.isChatDeleted
+    ) {
       const getSingleChaRequestPayload = {
         isNewChat: !chat_.thread_id,
         chatId: chat_.thread_id || chat_.pk,
@@ -160,7 +167,9 @@ class Title extends Component {
 
   render() {
     const { classes } = this.props;
-    const { showInfo, isUserBlocked, checked, chat_ } = this.state;
+    const {
+      showInfo, isUserBlocked, checked, chat_,
+    } = this.state;
     const chatTitle = chat_.thread_id
       ? getChatTitle(chat_)
       : getUsernames(chat_); // if chat_.thread_id is not defined, it is a new contact
@@ -168,8 +177,8 @@ class Title extends Component {
     if (chat_.presence) {
       timeFormat = chat_.presence.is_active
         ? 'Active now'
-        : chat_.presence.last_activity_at_ms &&
-          `Last seen ${formatTime(chat_.presence.last_activity_at_ms)}`;
+        : chat_.presence.last_activity_at_ms
+          && `Last seen ${formatTime(chat_.presence.last_activity_at_ms)}`;
     }
     const thumbnail = chat_.profile_pic_url || getChatThumbnail(chat_);
     return (
@@ -221,13 +230,13 @@ class Title extends Component {
               <DialogContent>
                 <FormGroup row>
                   <FormControlLabel
-                    control={
+                    control={(
                       <Checkbox
                         checked={checked}
                         onChange={this.handleChange}
                         name="checked"
                       />
-                    }
+                    )}
                     label="Mute Messages"
                   />
                 </FormGroup>

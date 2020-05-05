@@ -128,12 +128,7 @@ exports.startCheckpoint = () =>
 exports.getChatList = function () {
   const chatsFeed = igClient.feed.directInbox();
   return new Promise((resolve, reject) => {
-    chatsFeed
-      .items()
-      .then(resolve)
-      .catch((error) => {
-        console.log(reject);
-      });
+    chatsFeed.items().then(resolve).catch(reject);
   });
 };
 
@@ -260,16 +255,15 @@ exports.getUnfollowers = function () {
       newUsers.forEach((user) => allUsers.push(user));
       // moreAvailable maybe null. We are dodging that.
       if (
-        usersGetter.moreAvailable === false &&
-        otherUsersGetter.moreAvailable === false
+        usersGetter.moreAvailable === false
+        && otherUsersGetter.moreAvailable === false
       ) {
         compare();
       } else if (usersGetter.moreAvailable !== false) {
         usersGetter
           .items()
           .then((users) =>
-            getUsers(users, allUsers, usersGetter, otherUsersGetter),
-          )
+            getUsers(users, allUsers, usersGetter, otherUsersGetter))
           .catch(reject);
       }
     };
@@ -318,8 +312,8 @@ exports.muteUser = (thread) => {
   });
 };
 
-exports.blockUnblockUser = (userId, action) => {
-  return new Promise((resolve, reject) => {
+exports.blockUnblockUser = (userId, action) =>
+  new Promise((resolve, reject) => {
     if (action === 'block') {
       igClient.friendship
         .block(userId)
@@ -332,7 +326,6 @@ exports.blockUnblockUser = (userId, action) => {
         .catch((error) => reject(error));
     }
   });
-};
 
 exports.unsend = function (chatId, messageId) {
   return new Promise((resolve, reject) => {

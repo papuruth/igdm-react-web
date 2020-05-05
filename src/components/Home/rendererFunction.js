@@ -2,7 +2,10 @@
 /* eslint-disable no-use-before-define */
 import { unfollowUserAction } from '@/redux/chats/chatsAction';
 import {
-  formatTime, dom, getLoadingGif, showInViewer,
+  formatTime,
+  dom,
+  getLoadingGif,
+  showInViewer,
 } from './helperFunctions';
 
 /* eslint-disable no-unused-vars */

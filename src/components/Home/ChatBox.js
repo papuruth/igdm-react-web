@@ -4,10 +4,9 @@ import React from 'react';
 import MessageBox from './MessageBox';
 
 const ChatBox = ({ chatData, user, dispatch }) => {
-  const singleChat =
-    chatData.length > 0
-      ? chatData.filter((item) => item.thread_id === window.currentChatId)
-      : chatData;
+  const singleChat = chatData.length > 0
+    ? chatData.filter((item) => item.thread_id === window.currentChatId)
+    : chatData;
   return (
     <>
       <Title chat_={singleChat} />

@@ -7,17 +7,8 @@ exports.authenticate = (req, res) => {
     res.send('loginError', 'Please enter all required fields');
   }
 
-  function handleCheckpoint() {
-    return new Promise((resolve, reject) => {
-      instagram.startCheckpoint().then((challenge) => {
-        challenge.sendSecurityCode(data.code).then(resolve).catch(reject);
-      });
-    });
-  }
-
-  const getErrorMsg = (error) => {
-    return error.text || error.message || 'An unknown error occurred.';
-  };
+  const getErrorMsg = (error) =>
+    error.text || error.message || 'An unknown error occurred.';
 
   instagram
     .login(username, password)

@@ -7,6 +7,7 @@ import { unsendMessageAction } from '@/redux/chats/chatsAction';
 import { MoreHoriz } from '@material-ui/icons';
 import React, { Component } from 'react';
 import './carousel';
+import { Avatar } from '@material-ui/core';
 import {
   dom,
   formatTime,
@@ -14,7 +15,6 @@ import {
   showInViewer,
   truncate,
 } from './helperFunctions';
-import { Avatar } from '@material-ui/core';
 
 class Message extends Component {
   constructor(props) {
@@ -67,8 +67,7 @@ class Message extends Component {
     const { message, user, chat_ } = this.props;
     const { openPopover, popMoreAction } = this.state;
     const imageHash = new Date().getTime();
-    const direction =
-      message && message.user_id === user.pk ? 'outward' : 'inward';
+    const direction = message && message.user_id === user.pk ? 'outward' : 'inward';
     const time = message && message.timestamp;
     let senderUsername = '';
     let senderAvatar = '';
@@ -217,17 +216,16 @@ class Message extends Component {
         )}
       </div>
     );
-    function renderMessageAsText(message, type = null, msgId) {
-      const text =
-        typeof message === 'string' ? message : message.text || message;
-      return msgContainer(text, '', type, message.reactions, msgId);
+    function renderMessageAsText(message, _type, msgId) {
+      const text = typeof message === 'string' ? message : message.text || message;
+      return msgContainer(text, '', _type, message.reactions, msgId);
     }
 
-    function renderMessageAsRavenImage(message, type = null, msgId) {
+    function renderMessageAsRavenImage(message, _type, msgId) {
       if (
-        message.visual_media &&
-        !message.visual_media.seen_count &&
-        message.visual_media.media.image_versions2.candidates[1].url
+        message.visual_media
+        && !message.visual_media.seen_count
+        && message.visual_media.media.image_versions2.candidates[1].url
       ) {
         const {
           url,
@@ -256,18 +254,16 @@ class Message extends Component {
       );
     }
 
-    function renderMessageAsImage(message, type = null, msgId) {
-      const url =
-        typeof message === 'string'
-          ? message
-          : message.media.image_versions2.candidates[0].url;
+    function renderMessageAsImage(message, _type, msgId) {
+      const url = typeof message === 'string'
+        ? message
+        : message.media.image_versions2.candidates[0].url;
       return msgContainer(
         <img
           src={url}
           alt=""
           onClick={() =>
-            showInViewer(dom(`<img src="${url.concat(imageHash)}" alt=""/>`))
-          }
+            showInViewer(dom(`<img src="${url.concat(imageHash)}" alt=""/>`))}
         />,
         'ig-media',
         null,
@@ -276,7 +272,7 @@ class Message extends Component {
       );
     }
 
-    function renderPost(post, type = null, msgId) {
+    function renderPost(post, _type, _msgId) {
       console.log(post);
       const postDom = dom('<div class="center"></div>');
       if (post.video_versions) {
@@ -313,15 +309,15 @@ class Message extends Component {
       showInViewer(postDom);
     }
 
-    function renderMessageAsPost(message, type = null, msgId) {
+    function renderMessageAsPost(message, _type, msgId) {
       const post = message.media_share;
       if (post.image_versions2) {
         const img = (
           <>
             <img
               src={
-                post.image_versions2.candidates[0].url.concat(imageHash) ||
-                post.images[0][0].url.concat(imageHash)
+                post.image_versions2.candidates[0].url.concat(imageHash)
+                || post.images[0][0].url.concat(imageHash)
               }
               alt=""
               onClick={() => renderPost(post)}
@@ -354,7 +350,7 @@ class Message extends Component {
       return null;
     }
 
-    function renderMessageAsLike(message, type = null, msgId) {
+    function renderMessageAsLike(message, _type, msgId) {
       return msgContainer(
         <span>
           <img
@@ -381,7 +377,8 @@ class Message extends Component {
             rel="noopener noreferrer"
           >
             {splittedText[1]}
-          </a>{' '}
+          </a>
+          {' '}
           {splittedText[2]}
           <a
             href={`https://instagram.com/${splittedText[3]}`}
@@ -395,7 +392,7 @@ class Message extends Component {
       );
     }
 
-    function renderPlaceholderAsText(message, type = null, msgId) {
+    function renderPlaceholderAsText(message, _type, msgId) {
       let html = '';
       if (!message.placeholder.is_linked) {
         html = message.placeholder.message;
@@ -412,7 +409,7 @@ class Message extends Component {
       );
     }
 
-    function renderMessageAsLink(message, type = null, msgId) {
+    function renderMessageAsLink(message, _type, msgId) {
       const { link } = message;
       const {
         link_image_url,
@@ -452,7 +449,7 @@ class Message extends Component {
       );
     }
 
-    function renderMessageAsAnimatedMedia(message, type = null, msgId) {
+    function renderMessageAsAnimatedMedia(message, _type, msgId) {
       const { url } = message.animated_media.images.fixed_height;
       return msgContainer(
         <img src={`${url}?alt=${imageHash}`} alt="" />,
@@ -463,7 +460,7 @@ class Message extends Component {
       );
     }
 
-    function renderMessageAsVoiceMedia(message, type = null, msgId) {
+    function renderMessageAsVoiceMedia(message, _type, msgId) {
       const src = message.voice_media.media.audio.audio_src;
       return msgContainer(
         <audio preload="auto" controls>
@@ -477,7 +474,7 @@ class Message extends Component {
       );
     }
 
-    function renderMessageAsUserStory(message, msgType = null, msgId) {
+    function renderMessageAsUserStory(message, _type, msgId) {
       const { reel_share } = message;
       const { text, type, media } = reel_share;
       if (media.image_versions2) {

@@ -30,10 +30,9 @@ exports.fileUploader = async (req, res) => {
     if (req.file) {
       const { recepients } = req.body;
       const filePath = req.file.path;
-      const filePathJPG =
-        path.parse(filePath).ext === '.png'
-          ? `public/${path.parse(filePath).name}.jpg`
-          : '';
+      const filePathJPG = path.parse(filePath).ext === '.png'
+        ? `public/${path.parse(filePath).name}.jpg`
+        : '';
       let response;
       if (filePathJPG) {
         sharp(filePath)
@@ -41,7 +40,11 @@ exports.fileUploader = async (req, res) => {
           .toFile(filePathJPG, async (err_1, info) => {
             if (!err_1) {
               console.log(info);
-              response = await instagram.uploadFile(filePathJPG, recepients, 'photo');
+              response = await instagram.uploadFile(
+                filePathJPG,
+                recepients,
+                'photo',
+              );
               fs.unlinkSync(filePathJPG);
               fs.unlinkSync(filePath);
               if (response) {
@@ -150,6 +153,6 @@ exports.sendAudio = async (req, res) => {
         console.log(error);
       }
     }
+    return false;
   });
-  return false;
 };

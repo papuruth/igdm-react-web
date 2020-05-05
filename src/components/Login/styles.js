@@ -7,6 +7,6 @@ export const StyledContainer = styled.div`
   color: ${colors.light};
   display: flex;
   padding-right: 0px;
-    padding-left: 0px;
+  padding-left: 0px;
   flex-direction: column;
 `;

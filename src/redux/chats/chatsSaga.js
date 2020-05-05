@@ -1,5 +1,7 @@
 import api from '@/services/api';
-import { call, put, takeEvery, delay, takeLatest } from 'redux-saga/effects';
+import {
+  call, put, takeEvery, delay, takeLatest,
+} from 'redux-saga/effects';
 import { chatsConstants } from './chatsConstants';
 
 let chatListTimeoutObj;
@@ -152,8 +154,7 @@ function* getOlderMessageSaga(action) {
   if (data && data.type === 'oldMessageResponse') {
     messagesThread = data.payload.messagesThread;
     data.payload.messages.map((item) =>
-      data.payload.messagesThread.items.push(item),
-    );
+      data.payload.messagesThread.items.push(item));
     yield put(
       yield call(
         success,

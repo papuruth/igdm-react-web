@@ -34,7 +34,7 @@ function expressServer() {
   app.use(cors());
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
-
+  app.use(express.static(path.join(__dirname, '../build')));
   app.use('/', routes);
 
   /**
@@ -88,6 +88,15 @@ function expressServer() {
       default:
         throw error;
     }
+  }
+
+  // ===== Handling production mode:
+  if (process.env.NODE_ENV === 'production') {
+    console.log('YOU ARE IN THE PRODUCTION ENV');
+    app.get('*', (req, res) => {
+      console.log(req.path);
+      res.sendFile('index.html', { root: path.resolve('build') });
+    });
   }
 
   /**

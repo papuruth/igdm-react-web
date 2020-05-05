@@ -105,8 +105,8 @@ class Home extends React.Component {
     }
     if (olderMessages) {
       if (
-        Object.keys(state.singleChat).length &&
-        state.singleChat.items.length !== olderMessages.items.length
+        Object.keys(state.singleChat).length
+        && state.singleChat.items.length !== olderMessages.items.length
       ) {
         const doc = document.querySelector('.messages');
         doc.scrollBy(0, 200);
@@ -151,7 +151,7 @@ class Home extends React.Component {
     document.addEventListener('mousedown', this.handleClickOutside);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const {
       imageUploadLoader,
       audioUploadLoader,
@@ -173,15 +173,15 @@ class Home extends React.Component {
       dispatch(showLoaderAction(false, 'imageUploadLoader'));
     }
     if (
-      getSingleChat.thread_id !== prevProps.getSingleChat.thread_id ||
-      (getSingleChat.pk !== prevProps.getSingleChat.pk && chatLoader)
+      getSingleChat.thread_id !== prevProps.getSingleChat.thread_id
+      || (getSingleChat.pk !== prevProps.getSingleChat.pk && chatLoader)
     ) {
       dispatch(showLoaderAction(false, 'chatLoader'));
     }
     if (searchUserResult !== prevProps.searchUserResult && searchUserLoader) {
       dispatch(showLoaderAction(false, 'searchUserLoader'));
     }
-    if(unfollowers !== prevProps.unfollowers) {
+    if (unfollowers !== prevProps.unfollowers) {
       renderUnfollowers(unfollowers, dispatch);
     }
   }
@@ -222,9 +222,9 @@ class Home extends React.Component {
 
   handleClickOutside = (event) => {
     if (
-      this.emojiRef.previousSibling !== event.target.parentElement &&
-      !this.emojiRef.contains(event.target) &&
-      this.emojiToggleBtnRef !== event.target.parentElement
+      this.emojiRef.previousSibling !== event.target.parentElement
+      && !this.emojiRef.contains(event.target)
+      && this.emojiToggleBtnRef !== event.target.parentElement
     ) {
       this.emojiRef.classList.add('hide');
     }
@@ -322,8 +322,7 @@ class Home extends React.Component {
   };
 
   showProfile = () => {
-    document.getElementById('profiledropdown').classList =
-      'dropdown-menu active';
+    document.getElementById('profiledropdown').classList = 'dropdown-menu active';
   };
 
   showEmojiPane = (event) => {
@@ -423,7 +422,7 @@ class Home extends React.Component {
           audioRecordEvent: e,
         });
       },
-      pauseCallback: (e) => {},
+      pauseCallback: () => {},
       stopCallback: (e) => {
         this.setState({
           audioSrc: e,
@@ -431,10 +430,9 @@ class Home extends React.Component {
         });
       },
     };
-    const isBlocked =
-      Object.keys(singleChat).length && singleChat.users
-        ? singleChat.users[0].friendship_status.blocking
-        : false;
+    const isBlocked = Object.keys(singleChat).length && singleChat.users
+      ? singleChat.users[0].friendship_status.blocking
+      : false;
     if (isBlocked) {
       document.removeEventListener('mousedown', this.handleClickOutside);
     }
@@ -510,15 +508,15 @@ class Home extends React.Component {
                       />
                     )
                   )}
-                  {(searchText || !chatsList.length) &&
-                    (!searchUserResult.length || searchUserLoader) && (
+                  {(searchText || !chatsList.length)
+                    && (!searchUserResult.length || searchUserLoader) && (
                       <ClipLoader
                         css={renderUserListLoader}
                         size={70}
                         color="#123abc"
                         loading
                       />
-                    )}
+                  )}
                 </ul>
               </div>
             </div>
@@ -699,7 +697,11 @@ class Home extends React.Component {
               {isBlocked && (
                 <div className="blockedWrapper row p-3">
                   <div className="blockedContent">
-                    You blocked {singleChat.thread_title}.{' '}
+                    You blocked
+                    {' '}
+                    {singleChat.thread_title}
+                    .
+                    {' '}
                     <Button color="primary" onClick={this.deleteChat}>
                       Delete Chat.
                     </Button>

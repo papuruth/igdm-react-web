@@ -12,14 +12,13 @@ exports.getChatList = function getChatList(req, res) {
         .then((presenceInfo) => {
           for (const chat in chats) {
             if (
-              chats[chat].users.length === 1 &&
-              Object.prototype.hasOwnProperty.call(
+              chats[chat].users.length === 1
+              && Object.prototype.hasOwnProperty.call(
                 presenceInfo.user_presence,
                 chats[chat].users[0].pk,
               )
             ) {
-              chats[chat].presence =
-                presenceInfo.user_presence[chats[chat].users[0].pk];
+              chats[chat].presence = presenceInfo.user_presence[chats[chat].users[0].pk];
             }
           }
           res.send({
@@ -31,20 +30,20 @@ exports.getChatList = function getChatList(req, res) {
           res.send({
             type: 'chatListError',
             error,
-          }),
-        );
+          }));
     })
     .catch((error) =>
       res.send({
         type: 'chatListError',
         error,
-      }),
-    );
+      }));
 };
 
 exports.sendNewMessage = (req, res) => {
   const { message } = req.body;
-  const { isNewChat, text, users, chatId } = message;
+  const {
+    isNewChat, text, users, chatId,
+  } = message;
   try {
     if (isNewChat) {
       instagram

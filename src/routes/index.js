@@ -6,7 +6,13 @@ import Home from '@/containers/Home';
 
 const routes = [
   <PrivateRoute key="HomeComponent" path="/" component={Home} exact />,
-  <PublicRoute key="LoginComponent" path="/login" component={Login} exact restricted />,
+  <PublicRoute
+    key="LoginComponent"
+    path="/login"
+    component={Login}
+    exact
+    restricted
+  />,
 ];
 
 export default routes;

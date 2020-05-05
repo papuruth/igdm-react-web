@@ -2,30 +2,26 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import React, { Component } from 'react';
-import Badge from '@material-ui/core/Badge';
-import Avatar from '@material-ui/core/Avatar';
-import { withStyles } from '@material-ui/core/styles';
-import {
-  getSingleChatAction,
-  sendMarkAsReadAction,
-} from '@/redux/chats/chatsAction';
+import { sendMarkAsReadAction } from '@/redux/chats/chatsAction';
 import Toast from '@/utils/toast';
+import Avatar from '@material-ui/core/Avatar';
+import Badge from '@material-ui/core/Badge';
+import { withStyles } from '@material-ui/core/styles';
+import { VolumeOff } from '@material-ui/icons';
+import React, { Component } from 'react';
 import {
-  getMsgPreview,
+  addNotification,
+  getChatThumbnail,
   getChatTitle,
   getMsgDirection,
-  getChatThumbnail,
-  registerChatUser,
-  addNotification,
-  markAsRead,
+  getMsgPreview,
   isActive,
   isOnline,
+  markAsRead,
+  registerChatUser,
   scrollToChatBottom,
 } from './helperFunctions';
-
 import { renderMessage } from './rendererFunction';
-import { VolumeOff } from '@material-ui/icons';
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -86,7 +82,7 @@ class RenderUserList extends Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const { notif } = this.state;
     const { chatList, dispatch } = this.props;
     if (chatList !== prevProps.chatList) {
@@ -94,11 +90,6 @@ class RenderUserList extends Component {
         const liEle = document.getElementById(`chatlist-${chat_.thread_id}`);
         const resultNotif = addNotification(liEle, chat_);
         window.chatListHash[chat_.thread_id] = chat_;
-        const getSingleChaRequestPayload = {
-          isNewChat: !chat_.thread_id,
-          chatId: chat_.thread_id,
-          chatData: chat_,
-        };
         if (resultNotif) {
           if (!(chat_.thread_id in notif)) {
             const newNotif = { [chat_.thread_id]: { markAsRead: true } };
@@ -118,9 +109,9 @@ class RenderUserList extends Component {
           if (isActive(chat_)) {
             const readResult = markAsRead(chat_.thread_id, liEle);
             if (
-              readResult &&
-              chat_.thread_id in notif &&
-              notif[chat_.thread_id].markAsRead
+              readResult
+              && chat_.thread_id in notif
+              && notif[chat_.thread_id].markAsRead
             ) {
               dispatch(sendMarkAsReadAction(chat_));
               delete notif[chat_.thread_id];

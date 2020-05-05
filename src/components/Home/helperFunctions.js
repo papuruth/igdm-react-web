@@ -30,7 +30,7 @@ export function openInBrowser(url) {
   window.open(url, '_blank', 'noopener noreferrer');
 }
 
-export function copyToCliboard(text) {}
+export function copyToCliboard(_text) {}
 
 export function format(number) {
   return number > 9 ? `${number}` : `0${number}`;
@@ -133,9 +133,9 @@ export function loadOlderMsgsOnScrollTop(chatId) {
   const msgContainer = document.querySelector(CHAT_WINDOW_SELECTOR);
   msgContainer.onscroll = (e) => {
     if (
-      e.target.scrollTop < 200 &&
-      !window.gettingOlderMessages &&
-      window.currentChatId === chatId
+      e.target.scrollTop < 200
+      && !window.gettingOlderMessages
+      && window.currentChatId === chatId
     ) {
       // ipcRenderer.send('getOlderMessages', chatId);
       window.gettingOlderMessages = true;
@@ -177,17 +177,6 @@ export function resetMessageTextArea() {
   input.dispatchEvent(event);
 }
 
-export function addSubmitHandler(chat_) {
-  const input = document.querySelector(MSG_INPUT_SELECTOR);
-  input.onkeypress = (evt) => {
-    // allow new line when shift key is pressed
-    if (evt.keyCode === 13 && !evt.shiftKey) {
-      evt.preventDefault();
-      // submitMessage(chat_);
-    }
-  };
-}
-
 export function removeSubmitHandler() {
   const input = document.querySelector(MSG_INPUT_SELECTOR);
   input.onkeypress = () => {};
@@ -214,14 +203,13 @@ export function addNotification(el, chat_) {
   if (chat_.items[0].user_id === window.loggedInUserId) {
     return;
   }
-  const isNew =
-    (window.chatListHash[chat_.thread_id] &&
-      window.chatListHash[chat_.thread_id].items[0].item_id !==
-        chat_.items[0].item_id) ||
-    (chat_.last_seen_at &&
-      chat_.last_seen_at[window.loggedInUserId] &&
-      chat_.items[0].item_id !==
-        chat_.last_seen_at[window.loggedInUserId].item_id);
+  const isNew = (window.chatListHash[chat_.thread_id]
+      && window.chatListHash[chat_.thread_id].items[0].item_id
+        !== chat_.items[0].item_id)
+    || (chat_.last_seen_at
+      && chat_.last_seen_at[window.loggedInUserId]
+      && chat_.items[0].item_id
+        !== chat_.last_seen_at[window.loggedInUserId].item_id);
   if (isNew) {
     window.unreadChats[chat_.thread_id] = chat_;
   }
@@ -258,17 +246,17 @@ export function registerChatUser(chat_) {
 export function getIsSeenText(chat_) {
   let text = '';
   if (
-    !chat_.items ||
-    !chat_.items.length ||
-    chat_.items[0].user_id !== window.loggedInUserId
+    !chat_.items
+    || !chat_.items.length
+    || chat_.items[0].user_id !== window.loggedInUserId
   ) {
     return '';
   }
 
   const seenBy = chat_.users.filter(
     (user) =>
-      chat_.last_seen_at[user.pk] &&
-      chat_.last_seen_at[user.pk].item_id === chat_.items[0].item_id,
+      chat_.last_seen_at[user.pk]
+      && chat_.last_seen_at[user.pk].item_id === chat_.items[0].item_id,
   );
 
   if (seenBy.length === chat_.users.length) {
@@ -352,8 +340,8 @@ export function animateChatDelete(chatId) {
 
 export function removeChatFromChats(chatId) {
   if (
-    window.currentChatId === chatId ||
-    window.currentChatId === DUMMY_CHAT_ID
+    window.currentChatId === chatId
+    || window.currentChatId === DUMMY_CHAT_ID
   ) {
     resetChatScreen();
   }
