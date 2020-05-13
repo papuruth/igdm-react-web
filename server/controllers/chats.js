@@ -117,7 +117,6 @@ exports.getOlderMessage = (req, res) => {
 
 exports.searchUser = async (req, res) => {
   const { query } = req.query;
-  console.log(query);
   try {
     const response = await instagram.searchUsers(query);
     if (response instanceof IgResponseError) {
@@ -126,7 +125,6 @@ exports.searchUser = async (req, res) => {
         payload: [],
       });
     } else {
-      console.log(response);
       res.status(200).send({
         type: 'searchUserResponse',
         payload: response.users,
@@ -232,6 +230,19 @@ exports.unfollowUser = async (req, res) => {
     if (response) {
       res.status(200).send(response);
     }
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+exports.timeline = async (req, res) => {
+  try {
+    const response = await instagram.timeline();
+    const { more_available, feed_items } = response;
+    res.status(200).send({
+      hasMore: more_available,
+      timelines: feed_items,
+    });
   } catch (error) {
     res.status(400).send(error);
   }

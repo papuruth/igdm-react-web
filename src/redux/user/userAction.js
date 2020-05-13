@@ -30,3 +30,21 @@ export function changeGreetingFlagAction(flag) {
     payload: flag,
   };
 }
+
+export const userFeedAction = (userId, feeds) => ({
+  type: userConstants.FETCH_USER_FEED_REQUEST,
+  payload: {
+    userId,
+    feeds,
+  },
+});
+
+export const fullUserInfoAction = (userId) => ({
+  type: userConstants.FETCH_FULL_USER_INFO_REQUEST,
+  payload: userId,
+});
+
+export const searchExactUserAction = (username) => ({
+  type: userConstants.SEARCH_EXACT_USER_REQUEST,
+  payload: username,
+});

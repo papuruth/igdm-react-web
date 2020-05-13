@@ -9,7 +9,7 @@ export default {
 
   primary: '#22cc99',
   secundary: '#1f1e29',
-  background: '#fff',
+  background: '#fafafa',
 
   info: '#2299ff',
   success: '#22cc99',

@@ -5,7 +5,7 @@ const fileUploadController = require('../controllers/fileUploader');
 
 const router = express.Router();
 
-/* GET home page. */
+/* Express Routes */
 router.post('/login', userController.authenticate);
 router.post('/verifyotp', userController.handleTwoFactor);
 router.post('/logout', userController.logout);
@@ -23,5 +23,9 @@ router.post('/deletechat', chatController.deleteChat);
 router.post('/unsendmessage', chatController.unsendMessage);
 router.get('/getunfollowers', chatController.getUnfollowers);
 router.post('/unfollow', chatController.unfollowUser);
+router.get('/timeline', chatController.timeline);
+router.post('/user-feeds', userController.userFeeds);
+router.get('/user-info', userController.getFullUserInfo);
+router.get('/search-exact', userController.searchExact);
 
 module.exports = router;
