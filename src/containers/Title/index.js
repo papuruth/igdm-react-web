@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Title from '@/components/Home/Title';
+import Title from '@/components/DirectMessage/Title';
 
 const mapStateToProps = (state) => {
   const {

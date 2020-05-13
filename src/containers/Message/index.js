@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Message from '@/components/Home/Message';
+import Message from '@/components/DirectMessage/Message';
 
 const mapStateToProps = (state) => {
   const { renderNewMsg, isMsgDeleted } = state.chatReducer;

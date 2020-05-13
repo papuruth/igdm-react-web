@@ -6,7 +6,7 @@ import { sessionService } from 'redux-react-session';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import history from '@/routes/history';
-import rootReducer from '../redux/rootReducer';
+import { rootReducer } from '../redux/rootReducer';
 import sagas from '../redux/rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -19,6 +19,7 @@ const middlewares = [
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: ['timelineReducer', 'userFeedReducer'],
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -42,15 +43,6 @@ const options = {
 };
 
 sagaMiddleware.run(sagas);
-sessionService
-  .initSessionService(store, options)
-  .then(() =>
-    console.log(
-      'Redux React Session is ready and a session was refreshed from your storage',
-    ))
-  .catch(() =>
-    console.log(
-      'Redux React Session is ready and there is no session in your storage',
-    ));
+sessionService.initSessionService(store, options);
 
 export { store, persistor };

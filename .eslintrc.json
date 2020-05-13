@@ -12,8 +12,13 @@
     "implicit-arrow-linebreak": "off",
     "import/prefer-default-export": "off",
     "no-underscore-dangle": "off",
+    "react/jsx-props-no-spreading": "off",
     "no-restricted-globals": "off",
     "no-console": "off",
+    "no-shadow": "off",
+    "react/prop-types": "off",
+    "max-len": ["error", { "code": 300 }],
+    "import/no-cycle": "off",
     "no-unused-vars": [
       "error",
       {

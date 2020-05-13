@@ -8,6 +8,9 @@ import { MoreHoriz } from '@material-ui/icons';
 import React, { Component } from 'react';
 import './carousel';
 import { Avatar } from '@material-ui/core';
+import outlineHeart from '@/assets/images/outline-heart.svg';
+import filledHeart from '@/assets/images/filled-heart.svg';
+import likeHeart from '@/assets/images/heart.svg';
 import {
   dom,
   formatTime,
@@ -89,7 +92,7 @@ class Message extends Component {
               return (
                 <React.Fragment key={reactions.likes[0].timestamp}>
                   <img
-                    src={`${process.env.PUBLIC_URL}/assets/images/outline-heart.svg`}
+                    src={outlineHeart}
                     alt="reseiver"
                   />
                   <img
@@ -103,7 +106,7 @@ class Message extends Component {
             return (
               <span key={reactions.likes[0].timestamp}>
                 <img
-                  src={`${process.env.PUBLIC_URL}/assets/images/filled-heart.svg`}
+                  src={filledHeart}
                   alt="sender"
                 />
                 <img
@@ -355,7 +358,7 @@ class Message extends Component {
         <span>
           <img
             className="heart"
-            src={`${process.env.PUBLIC_URL}/assets/images/heart.svg`}
+            src={likeHeart}
             alt="heart"
           />
         </span>,

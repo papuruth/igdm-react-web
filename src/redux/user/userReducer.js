@@ -1,6 +1,6 @@
 import { userConstants } from './userConstants';
 
-export default function userReducer(state = {}, action) {
+export function userReducer(state = {}, action) {
   switch (action.type) {
     case userConstants.USER_AUTH_SUCCESS:
       return {
@@ -20,6 +20,7 @@ export default function userReducer(state = {}, action) {
       };
     case userConstants.USER_LOGOUT_SUCCESS:
       return {
+        ...state,
         logoutStatus: action.payload,
       };
     case userConstants.USER_LOGOUT_FAILURE:
@@ -27,6 +28,60 @@ export default function userReducer(state = {}, action) {
         logoutError: action.payload,
       };
     default:
-      return { ...state };
+      return state;
+  }
+}
+
+const initialState = {
+  userFeeds: [],
+  allFeeds: [],
+  hasMore: false,
+  userFeedError: null,
+  userInfo: {},
+  friendship: {},
+  highlights: {},
+  suggestedUser: {},
+  searchExactUserInfo: {},
+};
+export function userFeedReducer(state = initialState, action) {
+  switch (action.type) {
+    case userConstants.FETCH_USER_FEED_SUCCESS:
+      return {
+        ...state,
+        userFeeds: action.payload.feeds,
+        allFeeds:
+          state.userInfo.pk !== action.payload.pk
+            ? action.payload.newFeeds
+            : [...state.allFeeds, ...action.payload.newFeeds],
+        hasMore: action.payload.hasMore,
+      };
+    case userConstants.FETCH_USER_FEED_FAILURE:
+      return {
+        ...state,
+        userFeedError: action.error,
+      };
+    case userConstants.FETCH_FULL_USER_INFO_SUCCESS:
+      return {
+        ...state,
+        userInfo: action.payload.userInfo,
+        friendship: action.payload.friendship,
+        highlights: action.payload.highlights,
+        suggestedUser: action.payload.suggestedUser,
+      };
+    case userConstants.FETCH_FULL_USER_INFO_FAILURE:
+      return {
+        ...state,
+      };
+    case userConstants.SEARCH_EXACT_USER_SUCCESS:
+      return {
+        ...state,
+        searchExactUserInfo: action.payload,
+      };
+    case userConstants.SEARCH_EXACT_USER_FAILURE:
+      return {
+        ...state,
+      };
+    default:
+      return state;
   }
 }

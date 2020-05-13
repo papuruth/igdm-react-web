@@ -6,7 +6,7 @@ const buildAndGetStoragePath = () => {
   const storagePath = path.join('userData', 'session-cookie');
   if (!fs.existsSync(storagePath)) {
     // make directory if it doesn't exist
-    fs.mkdirSync(storagePath);
+    fs.mkdirSync(storagePath, { recursive: true });
   }
   return storagePath;
 };
@@ -60,7 +60,7 @@ const clearCookieFiles = () => {
 };
 
 const storeCookies = (username, cookies) => {
-  if (canUseFileStorage()) {
+  if (fs.existsSync(buildAndGetStoragePath()) && canUseFileStorage()) {
     const storagePath = buildAndGetStoragePath();
     const filePath = `${username}.json`;
     fs.writeFileSync(`${storagePath}/${filePath}`, JSON.stringify(cookies));

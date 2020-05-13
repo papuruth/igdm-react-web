@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
-
+import 'video-react/styles/scss/video-react.scss';
 import colors from './colors';
 
 const GlobalStyle = createGlobalStyle`
@@ -13,12 +13,7 @@ const GlobalStyle = createGlobalStyle`
   html {
     background-color: ${colors.background};
     background-repeat: no-repeat;
-    min-height: 100%;
-    min-width: 100%;
     scroll-behavior: smooth;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
   }
   body {
     background-color: transparent;

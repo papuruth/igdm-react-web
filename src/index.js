@@ -1,13 +1,14 @@
-import App from '@/App';
+import App from '@/containers/App';
+import * as serviceWorker from '@/serviceWorker';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import $ from 'jquery';
 import 'popper.js/dist/popper';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 import 'react-toastify/dist/ReactToastify.css';
-import { store, persistor } from './store/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistor, store } from './store/store';
 import GlobalStyled from './styles/global';
 
 window.$ = $;
@@ -30,3 +31,4 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root'),
 );
+serviceWorker.register();

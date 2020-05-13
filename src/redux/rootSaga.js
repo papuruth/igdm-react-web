@@ -4,6 +4,9 @@ import {
   userAuthVerifyOtpWatcherSaga,
   userLogoutWatcherSaga,
   changeGreetingFlagWatcher,
+  userFeedWatcherSaga,
+  fullUserInfoWatcherSaga,
+  searchExactUserWatcherSaga,
 } from './user/userSaga';
 import {
   chatListFetchWatcher,
@@ -23,6 +26,7 @@ import {
   getUnfollowersWatcherSaga,
   unfollowUserWatcherSaga,
 } from './chats/chatsSaga';
+import { fetchTimelineWatcherSaga } from './timeline/timelineSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -46,5 +50,9 @@ export default function* rootSaga() {
     unsendMessageWatcherSaga(),
     getUnfollowersWatcherSaga(),
     unfollowUserWatcherSaga(),
+    fetchTimelineWatcherSaga(),
+    userFeedWatcherSaga(),
+    fullUserInfoWatcherSaga(),
+    searchExactUserWatcherSaga(),
   ]);
 }

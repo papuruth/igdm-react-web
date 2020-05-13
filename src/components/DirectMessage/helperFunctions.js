@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
-
+import loadingIcon from '@/assets/images/loading.gif';
 import {
   DUMMY_CHAT_ID,
   MSG_INPUT_SELECTOR,
@@ -297,7 +297,7 @@ export function setProfilePic() {
 export function getLoadingGif() {
   const loadingGIF = dom(
     `<div class="center">
-      <img class="loadingGif" src="${process.env.PUBLIC_URL}/assets/images/loading.gif" />
+      <img class="loadingGif" src=${loadingIcon} />
     </div>`,
   );
 

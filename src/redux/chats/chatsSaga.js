@@ -1,8 +1,18 @@
 import api from '@/services/api';
 import {
-  call, put, takeEvery, delay, takeLatest,
+  call,
+  put,
+  takeEvery,
+  delay,
+  takeLatest,
+  take,
+  cancel,
+  cancelled,
+  fork,
 } from 'redux-saga/effects';
+import Axios from 'axios';
 import { chatsConstants } from './chatsConstants';
+import { userConstants } from '../user/userConstants';
 
 let chatListTimeoutObj;
 let messagesThread;
@@ -26,31 +36,40 @@ const fetchChatList = async () => {
 };
 
 function* fetchChatListSaga() {
-  const { response, error } = yield call(fetchChatList);
-  if (response && response.type === 'chatListResponse') {
-    yield put(
-      yield call(
-        success,
-        chatsConstants.FETCH_CHAT_LIST_SUCCESS,
-        response.payload,
-      ),
-    );
-  } else {
-    yield put(
-      yield call(failure, chatsConstants.FETCH_CHAT_LIST_FAILURE, error),
-    );
-  }
-  if (chatListTimeoutObj) {
-    clearTimeout(chatListTimeoutObj);
-  }
-  chatListTimeoutObj = yield delay(3000);
-  if (chatListTimeoutObj) {
-    yield fetchChatListSaga();
+  try {
+    const { response, error } = yield call(fetchChatList);
+    if (response && response.type === 'chatListResponse') {
+      yield put(
+        yield call(
+          success,
+          chatsConstants.FETCH_CHAT_LIST_SUCCESS,
+          response.payload,
+        ),
+      );
+    } else {
+      yield put(
+        yield call(failure, chatsConstants.FETCH_CHAT_LIST_FAILURE, error),
+      );
+    }
+    if (chatListTimeoutObj) {
+      clearTimeout(chatListTimeoutObj);
+    }
+    chatListTimeoutObj = yield delay(3000);
+    if (chatListTimeoutObj) {
+      yield fetchChatListSaga();
+    }
+  } finally {
+    if (yield cancelled()) clearTimeout(chatListTimeoutObj);
   }
 }
 
 export function* chatListFetchWatcher() {
-  yield takeEvery(chatsConstants.FETCH_CHAT_LIST_REQUEST, fetchChatListSaga);
+  while (yield take(chatsConstants.FETCH_CHAT_LIST_REQUEST)) {
+    const fetchChatListSyncTask = yield fork(fetchChatListSaga);
+    if (yield take(userConstants.USER_LOGOUT_REQUEST)) {
+      yield cancel(fetchChatListSyncTask);
+    }
+  }
 }
 
 const sendNewMessageService = async (message) => {
@@ -241,20 +260,29 @@ export function* showLoaderWatcherSaga() {
   yield takeLatest(chatsConstants.SHOW_LOADER_REQUEST, showHideLoaderSaga);
 }
 
-function* searchUserSaga(action) {
-  const searchUserService = async (query) => {
-    try {
-      const response = await api.get('/searchuser', {
-        params: {
-          query,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      return error;
+let cancelRequest;
+const searchUserService = async (query) => {
+  try {
+    // Cancel previous request
+    if (cancelRequest) {
+      cancelRequest();
     }
-  };
+    const { CancelToken } = Axios;
+    const response = await api.get('/searchuser', {
+      cancelToken: new CancelToken((c) => {
+        cancelRequest = c;
+      }),
+      params: {
+        query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
 
+function* searchUserSaga(action) {
   const data = yield call(searchUserService, action.payload);
   if (data && data.type === 'searchUserResponse') {
     yield put(

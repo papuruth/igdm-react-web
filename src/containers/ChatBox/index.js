@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import ChatBox from '@/components/Home/ChatBox';
+import ChatBox from '@/components/DirectMessage/ChatBox';
 
 const mapStateToProps = (state) => {
   const { user, authenticated } = state.session;

@@ -195,9 +195,10 @@ exports.sendMessage = function (message, chatId) {
   });
 };
 
+const searchUser = igClient.user;
 exports.searchUsers = async function (search) {
   try {
-    return await igClient.user.search(search);
+    return await searchUser.search(search);
   } catch (error) {
     return error;
   }
@@ -344,3 +345,59 @@ exports.like = function (chatId, messageId) {
       .catch((error) => reject(error));
   });
 };
+
+const timelineFeed = igClient.feed.timeline();
+exports.timeline = () =>
+  new Promise((resolve, reject) => {
+    timelineFeed.request().then(resolve).catch(reject);
+  });
+
+let userFeed;
+exports.userFeeds = (userId, feeds) => {
+  const needsNewUserFeed = Object.keys(feeds).length === 0 || feeds.user.pk !== userId;
+  const getMoreFeeds = (feeds, resolve, reject) => {
+    userFeed
+      .request()
+      .then((newFeeds) => {
+        resolve({ feeds, newFeeds });
+      })
+      .catch(reject);
+  };
+
+  return new Promise((resolve, reject) => {
+    if (needsNewUserFeed) {
+      userFeed = igClient.feed.user(userId);
+      getMoreFeeds(feeds, resolve, reject);
+    } else {
+      getMoreFeeds(feeds, resolve, reject);
+    }
+  });
+};
+
+exports.getFullUserInfo = (userId) => new Promise((resolve, reject) => {
+  igClient.user.info(userId).then(resolve).catch(reject);
+});
+
+exports.getFriendShipInfo = (userId) => new Promise((resolve, reject) => {
+  igClient.friendship.show(userId).then(resolve).catch(reject);
+});
+
+exports.getFollowing = (userId) => new Promise((resolve, reject) => {
+  igClient.feed
+    .accountFollowing(userId)
+    .request()
+    .then(resolve)
+    .catch(reject);
+});
+
+exports.getHighlights = (userId) => new Promise((resolve, reject) => {
+  igClient.highlights.highlightsTray(userId).then(resolve).catch(reject);
+});
+
+exports.getsuggestedUser = (userId) => new Promise((resolve, reject) => {
+  igClient.discover.chaining(userId).then(resolve).catch(reject);
+});
+
+exports.searchExact = (username) => new Promise((resolve, reject) => {
+  igClient.user.searchExact(username).then(resolve).catch(reject);
+});

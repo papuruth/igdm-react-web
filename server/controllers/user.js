@@ -1,4 +1,6 @@
 /* eslint-disable no-shadow */
+
+const { IgPrivateUserError } = require('instagram-private-api');
 const instagram = require('./instagram');
 
 exports.authenticate = (req, res) => {
@@ -12,10 +14,10 @@ exports.authenticate = (req, res) => {
 
   instagram
     .login(username, password)
-    .then((userInfo) => {
+    .then(({ pk }) => {
       res.send({
         type: 'authResponse',
-        payload: userInfo,
+        payload: pk,
       });
     })
     .catch((error) => {
@@ -55,10 +57,10 @@ exports.handleTwoFactor = (req, res) => {
       trustThisDevice,
       verificationMethod,
     )
-    .then((userInfo) => {
+    .then(({ pk }) => {
       res.send({
         type: 'authResponse',
-        payload: userInfo,
+        payload: pk,
       });
     })
     .catch((error) => {
@@ -84,4 +86,55 @@ exports.logout = (req, res) => {
         payload: error,
       });
     });
+};
+
+exports.userFeeds = async (req, res) => {
+  const { userId, feeds } = req.body;
+  try {
+    const response = await instagram.userFeeds(userId, feeds);
+    if (response) {
+      const { feeds, newFeeds } = response;
+      res.status(200).send({
+        feeds: Object.keys(feeds).length > 0 ? feeds : newFeeds.items[0],
+        newFeeds: newFeeds.items,
+        hasMore: newFeeds.more_available,
+        allFeeds: feeds,
+        pk: userId,
+      });
+    }
+  } catch (error) {
+    if (error instanceof IgPrivateUserError) {
+      res.status(400).send(error.message);
+    } else {
+      res.status(400).send(error);
+    }
+  }
+};
+
+exports.getFullUserInfo = async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const userInfo = await instagram.getFullUserInfo(userId);
+    const friendship = await instagram.getFriendShipInfo(userId);
+    const highlights = await instagram.getHighlights(userId);
+    const suggestedUser = await instagram.getsuggestedUser(userId);
+    res.status(200).send({
+      userInfo,
+      friendship,
+      highlights,
+      suggestedUser,
+    });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+exports.searchExact = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const response = await instagram.searchExact(username);
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 };
