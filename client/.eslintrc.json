@@ -1,28 +1,23 @@
 {
+  "parser": "babel-eslint",
+  "extends": ["airbnb"],
   "env": {
-    "commonjs": true,
-    "es6": true,
+    "browser": true,
+    "jest": true,
     "node": true
   },
-  "parser": "babel-eslint",
-  "extends": ["airbnb-base", "eslint:recommended", "prettier"],
-  "globals": {
-    "Atomics": "readonly",
-    "SharedArrayBuffer": "readonly"
-  },
-  "parserOptions": {
-    "ecmaVersion": 2018
-  },
-  "plugins": ["import", "prettier"],
+  "plugins": ["react", "jsx-a11y", "import"],
   "rules": {
     "camelcase": "off",
     "global-require": "off",
     "implicit-arrow-linebreak": "off",
     "import/prefer-default-export": "off",
     "no-underscore-dangle": "off",
+    "react/jsx-props-no-spreading": "off",
     "no-restricted-globals": "off",
     "no-console": "off",
     "no-shadow": "off",
+    "react/prop-types": "off",
     "max-len": ["error", { "code": 300 }],
     "import/no-cycle": "off",
     "no-unused-vars": [
@@ -31,6 +26,19 @@
         "argsIgnorePattern": "^_"
       }
     ],
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [".js", ".jsx"]
+      }
+    ],
     "single-quote": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [["@", "./src"]]
+      }
+    }
   }
 }
