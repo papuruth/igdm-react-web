@@ -36,7 +36,7 @@ function expressServer() {
   app.enable('trust proxy');
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
-  app.use(express.static(path.join(__dirname, '../build')));
+  app.use(express.static(path.join(__dirname, './client/build')));
   app.use('/', routes);
 
   /**
@@ -96,7 +96,7 @@ function expressServer() {
     console.log('YOU ARE IN THE DEVELOPMENT ENV');
     app.get('*', (req, res) => {
       console.log(req.path);
-      res.sendFile('index.html', { root: path.resolve('../build') });
+      res.sendFile('index.html', { root: path.resolve('./client/build') });
     });
   }
   // ===== Handling production mode:
@@ -104,7 +104,7 @@ function expressServer() {
     console.log('YOU ARE IN THE PRODUCTION ENV');
     app.get('*', (req, res) => {
       console.log(req.path);
-      res.sendFile('index.html', { root: path.resolve('../build') });
+      res.sendFile('index.html', { root: path.resolve('./client/build') });
     });
   }
 
