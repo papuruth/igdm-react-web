@@ -7,8 +7,9 @@
     "client": "cd client && yarn start",
     "dev": "cross-env NODE_ENV=development npm-run-all --parallel client start",
     "prettier": "prettier --write **/*.{js,jsx,json}",
-    "lint": "eslint **/*.{js,jsx}",
-    "format": "yarn lint --fix",
+    "lint:server": "eslint **/*.js",
+    "lint:client": "cd client && yarn lint",
+    "format": "yarn lint:server --fix && yarn lint:client --fix",
     "heroku-postbuild": "cd client && yarn install --prod && yarn build"
   },
   "husky": {
