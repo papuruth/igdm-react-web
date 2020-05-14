@@ -157,6 +157,10 @@ class Header extends React.Component {
     });
   };
 
+  resetTimeline = () => {
+    window.scrollTo(0, 0);
+  };
+
   render() {
     const {
       classes, searchUserResult, searchUserLoader, user,
@@ -177,7 +181,11 @@ class Header extends React.Component {
         onClose={this.handleMobileMenuClose}
       >
         <MenuItem>
-          <IconButton aria-label="go to home" color="inherit">
+          <IconButton
+            aria-label="go to home"
+            color="inherit"
+            onClick={this.resetTimeline}
+          >
             <Link to="/">
               <Home />
             </Link>
@@ -277,7 +285,7 @@ class Header extends React.Component {
                             <div className="search-result-anchor-content">
                               <div
                                 className="search-result-avatar-wrapper"
-                                // onContextMenu={(e) => e.preventDefault()}
+                                onContextMenu={(e) => e.preventDefault()}
                               >
                                 <canvas className="search-result-avatar-canvas" />
                                 <span className="search-result-avatar-content">

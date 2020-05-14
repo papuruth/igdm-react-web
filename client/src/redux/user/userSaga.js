@@ -204,7 +204,7 @@ function* userLogout(action) {
     yield persistor.purge();
     localStorage.removeItem('persist:root');
     yield put(yield call(success, userConstants.USER_LOGOUT_SUCCESS, data));
-    window.location.reload();
+    history.push('/');
   } else {
     yield put(yield call(failure, userConstants.USER_LOGOUT_FAILURE, data));
   }

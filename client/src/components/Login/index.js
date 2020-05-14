@@ -38,16 +38,15 @@ export default class Login extends React.Component {
 
   componentDidMount() {
     const { logoutStatus } = this.props;
-    if (logoutStatus) {
+    if (Object.keys(logoutStatus).length) {
       Toast.info(`Hello, ${logoutStatus.user}! You have been logged out.`);
       Toast.warning('Session Deleted Successfully!!!');
     }
   }
 
-  componentDidUpdate(prevProps) {
-    console.log(this.props, prevProps);
+  componentDidUpdate(prevProps, prevState) {
     const { errorType, dispatch, isCheckpoint } = this.props;
-    if (errorType !== prevProps.errorType) {
+    if (errorType !== prevState.errorType) {
       const button = document.querySelector('button[type=submit]');
       button.innerText = errorType === 'isTwoFactorError' || errorType === 'isCheckpointError'
         ? 'Verify'
@@ -121,11 +120,10 @@ export default class Login extends React.Component {
       errorPayload,
       clearLoginError,
     } = this.state;
-    const { isCheckpoint } = this.props;
     return (
       <StyledContainer>
         <div className="container">
-          {!errorType && (
+          {errorType !== 'isTwoFactorError' && errorType !== 'isCheckpointError' && (
             <form className="pageCard mx-auto p-4 p-sm-5" onSubmit={this.login}>
               <div className="clearfix welcomeBox">
                 <img
@@ -140,22 +138,26 @@ export default class Login extends React.Component {
                 </span>
               </div>
               <div className="input-group loginInputs mt-4">
-                <input
-                  className="form-control username"
-                  type="text"
-                  name="username"
-                  value={username}
-                  onChange={this.handleUserInput}
-                  placeholder="Username"
-                />
-                <input
-                  className="form-control password"
-                  type="password"
-                  name="password"
-                  value={password}
-                  onChange={this.handleUserInput}
-                  placeholder="Password"
-                />
+                <label htmlFor="username">
+                  <input
+                    className="form-control username"
+                    type="text"
+                    name="username"
+                    value={username}
+                    onChange={this.handleUserInput}
+                    placeholder="Username"
+                  />
+                </label>
+                <label htmlFor="password">
+                  <input
+                    className="form-control password"
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={this.handleUserInput}
+                    placeholder="Password"
+                  />
+                </label>
               </div>
               <button
                 className="loginButton mt-3 btn btn-primary"
@@ -206,14 +208,16 @@ export default class Login extends React.Component {
                 />
               </div>
               <div className="input-group loginInputs mt-4">
-                <input
-                  className="form-control otp"
-                  type="text"
-                  name="otp"
-                  value={otp}
-                  onChange={this.handleUserInput}
-                  placeholder="OTP"
-                />
+                <label htmlFor="otp">
+                  <input
+                    className="form-control otp"
+                    type="text"
+                    name="otp"
+                    value={otp}
+                    onChange={this.handleUserInput}
+                    placeholder="OTP"
+                  />
+                </label>
               </div>
               <button
                 className="loginButton mt-3 btn btn-primary"
@@ -243,15 +247,17 @@ export default class Login extends React.Component {
                   </p>
                 </div>
                 <div className="input-group loginInputs mt-4">
-                  <input
-                    className="form-control code"
-                    type="text"
-                    name="otp"
-                    value={otp}
-                    onChange={this.handleUserInput}
-                    required
-                    placeholder="OTP"
-                  />
+                  <label htmlFor="otp">
+                    <input
+                      className="form-control code"
+                      type="text"
+                      name="otp"
+                      value={otp}
+                      onChange={this.handleUserInput}
+                      required
+                      placeholder="OTP"
+                    />
+                  </label>
                 </div>
                 <button
                   className="loginButton mt-3 btn btn-primary"

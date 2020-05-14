@@ -7,6 +7,7 @@ const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const routes = require('./routes/index');
@@ -30,8 +31,8 @@ function expressServer() {
   const server = http.createServer(app);
 
   app.use(logger('dev'));
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: false }));
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.use(cors());
   app.enable('trust proxy');
   app.use(cookieParser());
@@ -115,7 +116,8 @@ function expressServer() {
   function onListening() {
     instagram.hasActiveSession();
     const addr = server.address();
-    const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+    const bind =
+      typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
     console.log(`App listening on ${bind}`);
   }
   /**

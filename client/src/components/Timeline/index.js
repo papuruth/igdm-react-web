@@ -174,7 +174,6 @@ class Timeline extends React.Component {
 
   render() {
     const { data, hasMore, classes } = this.props;
-    console.log(data[0]);
     const { expanded } = this.state;
     const responsive = {
       desktop: {

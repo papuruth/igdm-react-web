@@ -1,7 +1,19 @@
 import { userConstants } from './userConstants';
 
-export function userReducer(state = {}, action) {
+const userAuthInitialState = {
+  errorType: '',
+  errorPayload: '',
+  greetingsFlag: false,
+  authStatus: false,
+  isCheckpoint: false,
+  logoutStatus: {},
+};
+export function userReducer(state = userAuthInitialState, action) {
   switch (action.type) {
+    case userConstants.USER_AUTH_REQUEST:
+      return {
+        ...userAuthInitialState,
+      };
     case userConstants.USER_AUTH_SUCCESS:
       return {
         ...state,
@@ -42,7 +54,7 @@ export function userReducer(state = {}, action) {
   }
 }
 
-const initialState = {
+const userFeedInitialState = {
   userFeeds: [],
   allFeeds: [],
   hasMore: false,
@@ -53,7 +65,8 @@ const initialState = {
   suggestedUser: {},
   searchExactUserInfo: {},
 };
-export function userFeedReducer(state = initialState, action) {
+
+export function userFeedReducer(state = userFeedInitialState, action) {
   switch (action.type) {
     case userConstants.FETCH_USER_FEED_SUCCESS:
       return {

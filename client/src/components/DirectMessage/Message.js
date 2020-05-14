@@ -8,6 +8,7 @@ import { MoreHoriz } from '@material-ui/icons';
 import React, { Component } from 'react';
 import './carousel';
 import { Avatar } from '@material-ui/core';
+import * as moment from 'moment';
 import outlineHeart from '@/assets/images/outline-heart.svg';
 import filledHeart from '@/assets/images/filled-heart.svg';
 import likeHeart from '@/assets/images/heart.svg';
@@ -91,10 +92,7 @@ class Message extends Component {
             if (like.sender_id === chat_.users[0].pk) {
               return (
                 <React.Fragment key={reactions.likes[0].timestamp}>
-                  <img
-                    src={outlineHeart}
-                    alt="reseiver"
-                  />
+                  <img src={outlineHeart} alt="reseiver" />
                   <img
                     src={chat_.users[0].profile_pic_url}
                     alt={chat_.users[0].username}
@@ -105,10 +103,7 @@ class Message extends Component {
             }
             return (
               <span key={reactions.likes[0].timestamp}>
-                <img
-                  src={filledHeart}
-                  alt="sender"
-                />
+                <img src={filledHeart} alt="sender" />
                 <img
                   src={chat_.inviter.profile_pic_url}
                   alt={chat_.inviter.username}
@@ -356,11 +351,7 @@ class Message extends Component {
     function renderMessageAsLike(message, _type, msgId) {
       return msgContainer(
         <span>
-          <img
-            className="heart"
-            src={likeHeart}
-            alt="heart"
-          />
+          <img className="heart" src={likeHeart} alt="heart" />
         </span>,
         '',
         message.item_type,
@@ -528,6 +519,71 @@ class Message extends Component {
       );
     }
 
+    function renderMessageAsStoryShare(msg, _type, msgId) {
+      console.log(msg, _type, msgId);
+      const { story_share } = msg;
+      const {
+        text, reel_type, media, title, message,
+      } = story_share;
+      if (media && media.image_versions2) {
+        const { url } = media.image_versions2.candidates[1];
+        const { expiring_at, user } = media;
+        const expired = expiring_at ? moment.now() > expiring_at : false;
+        if (expired) {
+          return msgContainer(
+            <p className="placeholder">
+              Sent
+              {' '}
+              {user.username}
+              {' '}
+              story.
+            </p>,
+            '',
+            reel_type === 'user_reel' ? null : reel_type,
+            null,
+            msgId,
+          );
+        }
+        return msgContainer(
+          <>
+            <img
+              src={url.concat(imageHash)}
+              className="story_reaction"
+              alt=""
+              onClick={() => {
+                if (media.video_versions) {
+                  const videoUrl = media.video_versions[0].url;
+                  return showInViewer(
+                    dom(`<video controls src="${videoUrl}">`),
+                  );
+                }
+                return showInViewer(
+                  dom(`<img src="${url.concat(imageHash)}">`),
+                );
+              }}
+            />
+            {text && reel_type === 'reply' && <p>{text}</p>}
+            {text && reel_type === 'reaction' && (
+              <p className={`story_reaction_text_${direction}`}>{text}</p>
+            )}
+          </>,
+          '',
+          reel_type === 'reply' ? null : reel_type,
+          null,
+          msgId,
+        );
+      }
+      return msgContainer(
+        <>
+          <p className="placeholder">{title}</p>
+          <p className="placeholder">{message}</p>
+        </>,
+        '',
+        reel_type === 'user_reel' ? null : reel_type,
+        null,
+        msgId,
+      );
+    }
     // function renderMessageAsActionLog(message, type = null, msgId) {
     //   renderMessageAsText(message.action_log.description, type, msgId);
     // }
@@ -541,6 +597,7 @@ class Message extends Component {
       reel_share: renderMessageAsUserStory, // replying to a user's story
       link: renderMessageAsLink,
       animated_media: renderMessageAsAnimatedMedia,
+      story_share: renderMessageAsStoryShare,
       // action_log: renderMessageAsActionLog,
       voice_media: renderMessageAsVoiceMedia,
       placeholder: renderPlaceholderAsText,
