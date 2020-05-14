@@ -32,12 +32,5 @@
       }
     ],
     "single-quote": "off"
-  },
-  "settings": {
-    "import/resolver": {
-      "alias": {
-        "map": [["@", "./client/src"]]
-      }
-    }
   }
 }

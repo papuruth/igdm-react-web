@@ -19,7 +19,7 @@ const middlewares = [
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['timelineReducer', 'userFeedReducer'],
+  blacklist: ['timelineReducer', 'userFeedReducer', 'userReducer'],
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

@@ -71,6 +71,35 @@ exports.handleTwoFactor = (req, res) => {
     });
 };
 
+let challenge;
+exports.startCheckpoint = async (req, res) => {
+  try {
+    const response = await instagram.startCheckpoint();
+    challenge = response;
+    res.status(200).send({
+      type: 'authResponse',
+      isCheckpoint: true,
+    });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+exports.handleCheckpoint = async (req, res) => {
+  const { otp } = req.body;
+  try {
+    const response = await challenge.sendSecurityCode(otp);
+    if (response) {
+      res.status(200).send({
+        type: 'authResponse',
+        payload: response.logged_in_user.pk,
+      });
+    }
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
 exports.logout = (req, res) => {
   instagram
     .logout()

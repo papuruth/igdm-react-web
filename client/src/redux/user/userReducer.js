@@ -18,6 +18,16 @@ export function userReducer(state = {}, action) {
         errorPayload: action.error.error,
         errorType: action.error.type,
       };
+    case userConstants.USER_AUTH_START_CHECKPOINT_SUCCESS:
+      return {
+        ...state,
+        isCheckpoint: action.payload.isCheckpoint,
+      };
+    case userConstants.USER_AUTH_START_CHECKPOINT_FAILURE:
+      return {
+        ...state,
+        errorPayload: action.error,
+      };
     case userConstants.USER_LOGOUT_SUCCESS:
       return {
         ...state,

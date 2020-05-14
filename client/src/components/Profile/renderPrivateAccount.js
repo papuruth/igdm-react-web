@@ -37,8 +37,8 @@ const responsive = {
     items: 5,
   },
   mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 3,
+    breakpoint: { max: 767, min: 0 },
+    items: 2,
   },
 };
 export const RenderPrivateAccount = ({

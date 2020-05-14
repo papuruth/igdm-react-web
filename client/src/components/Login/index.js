@@ -1,9 +1,14 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-unused-vars */
-import { userAuthRequest, userAuthVerifyOtp } from '@/redux/user/userAction';
-import React from 'react';
+import {
+  userAuthRequest,
+  userAuthVerifyOtp,
+  userAuthStartCheckpoint,
+  userAuthHandleCheckpoint,
+} from '@/redux/user/userAction';
 import Toast from '@/utils/toast';
+import React from 'react';
 import { StyledContainer } from './styles';
 
 export default class Login extends React.Component {
@@ -15,6 +20,7 @@ export default class Login extends React.Component {
       error: false,
       errorType: '',
       errorPayload: '',
+      clearLoginError: false,
       otp: '',
     };
   }
@@ -24,6 +30,7 @@ export default class Login extends React.Component {
       return {
         errorType: props.errorType,
         errorPayload: props.errorPayload,
+        clearLoginError: false,
       };
     }
     return null;
@@ -34,6 +41,22 @@ export default class Login extends React.Component {
     if (logoutStatus) {
       Toast.info(`Hello, ${logoutStatus.user}! You have been logged out.`);
       Toast.warning('Session Deleted Successfully!!!');
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    console.log(this.props, prevProps);
+    const { errorType, dispatch, isCheckpoint } = this.props;
+    if (errorType !== prevProps.errorType) {
+      const button = document.querySelector('button[type=submit]');
+      button.innerText = errorType === 'isTwoFactorError' || errorType === 'isCheckpointError'
+        ? 'Verify'
+        : 'Login to Instagram';
+      button.classList.remove('loggingIn');
+      button.removeAttribute('disabled');
+    }
+    if (errorType === 'isCheckpointError' && !isCheckpoint) {
+      dispatch(userAuthStartCheckpoint());
     }
   }
 
@@ -52,9 +75,11 @@ export default class Login extends React.Component {
       dispatch(userAuthRequest(username, password));
       const button = document.querySelector('button[type=submit]');
       button.innerText = 'Logging In...';
-      button.classList.add('loggingIn', 'disabled');
+      button.classList.add('loggingIn');
+      button.setAttribute('disabled', 'true');
       this.setState({
         error: false,
+        clearLoginError: true,
       });
     } else {
       this.setState({
@@ -69,6 +94,21 @@ export default class Login extends React.Component {
     const otpDetails = { ...errorPayload, otp };
     const { dispatch } = this.props;
     dispatch(userAuthVerifyOtp(otpDetails));
+    const button = document.querySelector('button[type=submit]');
+    button.innerText = 'Verifying OTP...';
+    button.classList.add('loggingIn');
+    button.setAttribute('disabled', 'true');
+  };
+
+  handleCheckpoint = (event) => {
+    event.preventDefault();
+    const { otp } = this.state;
+    const { dispatch } = this.props;
+    dispatch(userAuthHandleCheckpoint(otp));
+    const button = document.querySelector('button[type=submit]');
+    button.innerText = 'Verifying OTP...';
+    button.classList.add('loggingIn');
+    button.setAttribute('disabled', 'true');
   };
 
   render() {
@@ -79,16 +119,13 @@ export default class Login extends React.Component {
       errorType,
       otp,
       errorPayload,
+      clearLoginError,
     } = this.state;
-    if (errorType) {
-      const button = document.querySelector('button[type=submit]');
-      button.innerText = 'Logging In...';
-      button.classList.remove('loggingIn', 'disabled');
-    }
+    const { isCheckpoint } = this.props;
     return (
       <StyledContainer>
         <div className="container">
-          {errorType !== 'isTwoFactorError' ? (
+          {!errorType && (
             <form className="pageCard mx-auto p-4 p-sm-5" onSubmit={this.login}>
               <div className="clearfix welcomeBox">
                 <img
@@ -126,7 +163,7 @@ export default class Login extends React.Component {
               >
                 Login to Instagram
               </button>
-              {errorType === 'loginError' ? (
+              {errorType === 'loginError' && !clearLoginError ? (
                 <span className="d-block errorMessage text-center mt-3">
                   {errorPayload}
                 </span>
@@ -150,7 +187,8 @@ export default class Login extends React.Component {
                 <p>We don&apos;t store your password.</p>
               </div>
             </form>
-          ) : (
+          )}
+          {errorType === 'isTwoFactorError' && (
             <form
               className="pageCard mx-auto p-4 p-sm-5"
               onSubmit={this.verifyOtp}
@@ -182,13 +220,52 @@ export default class Login extends React.Component {
                 type="submit"
                 disabled={!otp}
               >
-                Submit
+                Verify
               </button>
               <span
                 className="d-block errorMessage text-center mt-3"
                 id="error"
               />
             </form>
+          )}
+          {errorType === 'isCheckpointError' && (
+            <div className="container cardBox pb-5 pt-3 pt-sm-5">
+              <form
+                className="pageCard mx-auto p-4 p-sm-5"
+                onSubmit={this.handleCheckpoint}
+              >
+                <div className="clearfix welcomeBox">
+                  <p className="d-block text-center">
+                    Checkpoint Verification Required
+                  </p>
+                  <p className="d-block text-center">
+                    Please enter OPT received on phone.
+                  </p>
+                </div>
+                <div className="input-group loginInputs mt-4">
+                  <input
+                    className="form-control code"
+                    type="text"
+                    name="otp"
+                    value={otp}
+                    onChange={this.handleUserInput}
+                    required
+                    placeholder="OTP"
+                  />
+                </div>
+                <button
+                  className="loginButton mt-3 btn btn-primary"
+                  type="submit"
+                  disabled={!otp}
+                >
+                  Verify
+                </button>
+                <span
+                  className="d-block errorMessage text-center mt-3"
+                  id="error"
+                />
+              </form>
+            </div>
           )}
         </div>
       </StyledContainer>

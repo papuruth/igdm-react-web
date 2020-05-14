@@ -7,6 +7,8 @@ import {
   userFeedWatcherSaga,
   fullUserInfoWatcherSaga,
   searchExactUserWatcherSaga,
+  userAuthStartCheckpointWatcherSaga,
+  userAuthHandleCheckpointWatcherSaga,
 } from './user/userSaga';
 import {
   chatListFetchWatcher,
@@ -32,6 +34,8 @@ export default function* rootSaga() {
   yield all([
     userAuthWatcherSaga(),
     userAuthVerifyOtpWatcherSaga(),
+    userAuthStartCheckpointWatcherSaga(),
+    userAuthHandleCheckpointWatcherSaga(),
     changeGreetingFlagWatcher(),
     chatListFetchWatcher(),
     userLogoutWatcherSaga(),

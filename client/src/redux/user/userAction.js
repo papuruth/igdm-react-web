@@ -17,6 +17,15 @@ export function userAuthVerifyOtp(otpDetails) {
   };
 }
 
+export const userAuthStartCheckpoint = () => ({
+  type: userConstants.USER_AUTH_START_CHECKPOINT_REQUEST,
+});
+
+export const userAuthHandleCheckpoint = (otp) => ({
+  type: userConstants.USER_AUTH_CHECKPOINT_HANDLE_REQUEST,
+  payload: otp,
+});
+
 export function userLogout(user) {
   return {
     type: userConstants.USER_LOGOUT_REQUEST,

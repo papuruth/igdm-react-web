@@ -19,29 +19,10 @@ export const failure = (type, error) => ({
   error,
 });
 
-export const authenticateUser = async (payload) => {
+const authenticateUser = async (payload) => {
   try {
     const { username, password } = payload;
     const response = await api.post('/login', { username, password });
-    if (response && response.data.type === 'authResponse') {
-      const userId = response.data.payload;
-      const fullUserInfo = await api.get('/user-info', {
-        params: {
-          userId,
-        },
-      });
-      await sessionService.saveSession(fullUserInfo.data.userInfo);
-      await sessionService.saveUser(fullUserInfo.data.userInfo);
-    }
-    return response.data;
-  } catch (error) {
-    return error;
-  }
-};
-
-export const verifyOtpLogin = async (otpDetails) => {
-  try {
-    const response = await api.post('/verifyotp', { otpDetails });
     if (response && response.data.type === 'authResponse') {
       const userId = response.data.payload;
       const fullUserInfo = await api.get('/user-info', {
@@ -79,6 +60,29 @@ function* userAuthSaga(action) {
   }
 }
 
+export function* userAuthWatcherSaga() {
+  yield takeEvery(userConstants.USER_AUTH_REQUEST, userAuthSaga);
+}
+
+export const verifyOtpLogin = async (otpDetails) => {
+  try {
+    const response = await api.post('/verifyotp', { otpDetails });
+    if (response && response.data.type === 'authResponse') {
+      const userId = response.data.payload;
+      const fullUserInfo = await api.get('/user-info', {
+        params: {
+          userId,
+        },
+      });
+      await sessionService.saveSession(fullUserInfo.data.userInfo);
+      await sessionService.saveUser(fullUserInfo.data.userInfo);
+    }
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 function* userAuthVerifyOtp(action) {
   const data = yield call(verifyOtpLogin, action.payload);
   if (data && data.type === 'authResponse') {
@@ -91,6 +95,94 @@ function* userAuthVerifyOtp(action) {
   } else {
     yield put(yield call(failure, userConstants.USER_AUTH_FAILURE, data));
   }
+}
+
+export function* userAuthVerifyOtpWatcherSaga() {
+  yield takeEvery(
+    userConstants.USER_AUTH_OTP_VERIFY_REQUEST,
+    userAuthVerifyOtp,
+  );
+}
+
+const userAuthHandleCheckpoint = async (otp) => {
+  try {
+    const response = await api.post('/handle-checkpoint', { otp });
+    if (response && response.data.type === 'authResponse') {
+      const userId = response.data.payload;
+      const fullUserInfo = await api.get('/user-info', {
+        params: {
+          userId,
+        },
+      });
+      await sessionService.saveSession(fullUserInfo.data.userInfo);
+      await sessionService.saveUser(fullUserInfo.data.userInfo);
+    }
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* userAuthHandleCheckpointSaga(action) {
+  const { response, error } = yield call(
+    userAuthHandleCheckpoint,
+    action.payload,
+  );
+  if (response && response.type === 'authResponse') {
+    yield put(yield call(success, userConstants.GREETINGS_FLAG_SUCCESS, true));
+    yield put(
+      yield call(success, userConstants.USER_AUTH_SUCCESS, response.payload),
+    );
+    persistor.persist();
+    history.push('/');
+  } else {
+    yield put(yield call(failure, userConstants.USER_AUTH_FAILURE, error));
+  }
+}
+
+export function* userAuthHandleCheckpointWatcherSaga() {
+  yield takeEvery(
+    userConstants.USER_AUTH_CHECKPOINT_HANDLE_REQUEST,
+    userAuthHandleCheckpointSaga,
+  );
+}
+
+const userAuthStartCheckpointService = async () => {
+  try {
+    const response = await api.post('/startcheckpoint');
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* userAuthStartCheckpointSaga() {
+  const { response, error } = yield call(userAuthStartCheckpointService);
+  console.log(response, error);
+  if (response && response.type === 'authResponse') {
+    yield put(
+      yield call(
+        success,
+        userConstants.USER_AUTH_START_CHECKPOINT_SUCCESS,
+        response,
+      ),
+    );
+  } else {
+    yield put(
+      yield call(
+        failure,
+        userConstants.USER_AUTH_START_CHECKPOINT_FAILURE,
+        error,
+      ),
+    );
+  }
+}
+
+export function* userAuthStartCheckpointWatcherSaga() {
+  yield takeEvery(
+    userConstants.USER_AUTH_START_CHECKPOINT_REQUEST,
+    userAuthStartCheckpointSaga,
+  );
 }
 
 function* userLogout(action) {
@@ -116,17 +208,6 @@ function* userLogout(action) {
   } else {
     yield put(yield call(failure, userConstants.USER_LOGOUT_FAILURE, data));
   }
-}
-
-export function* userAuthWatcherSaga() {
-  yield takeEvery(userConstants.USER_AUTH_REQUEST, userAuthSaga);
-}
-
-export function* userAuthVerifyOtpWatcherSaga() {
-  yield takeEvery(
-    userConstants.USER_AUTH_OTP_VERIFY_REQUEST,
-    userAuthVerifyOtp,
-  );
 }
 
 export function* userLogoutWatcherSaga() {
@@ -207,7 +288,10 @@ const searchExactUserService = async (username) => {
 };
 
 function* searchExactUserSaga(action) {
-  const { response, error } = yield call(searchExactUserService, action.payload);
+  const { response, error } = yield call(
+    searchExactUserService,
+    action.payload,
+  );
   if (response) {
     yield put(
       yield call(success, userConstants.SEARCH_EXACT_USER_SUCCESS, response),

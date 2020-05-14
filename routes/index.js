@@ -8,6 +8,8 @@ const router = express.Router();
 /* Express Routes */
 router.post('/login', userController.authenticate);
 router.post('/verifyotp', userController.handleTwoFactor);
+router.post('/startcheckpoint', userController.startCheckpoint);
+router.post('/handle-checkpoint', userController.handleCheckpoint);
 router.post('/logout', userController.logout);
 router.get('/chatlist', chatController.getChatList);
 router.post('/send-message', chatController.sendNewMessage);

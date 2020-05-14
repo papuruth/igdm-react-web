@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import React from 'react';
+import { GridOn, LiveTv, BookmarkBorderOutlined } from '@material-ui/icons';
 import { RenderPrivateAccount } from './renderPrivateAccount';
 import { RenderProfileHeader } from './renderProfileHeader';
 import RenderUserFeeds from './renderUserFeeds';
@@ -164,9 +165,9 @@ class Profile extends React.Component {
                     textColor="primary"
                     centered
                   >
-                    <Tab label="Item One" />
-                    <Tab label="Item Two" />
-                    <Tab label="Item Three" />
+                    <Tab icon={<GridOn />} label="POSTS" />
+                    <Tab icon={<LiveTv />} label="IGTV" />
+                    <Tab icon={<BookmarkBorderOutlined />} label="SAVED" />
                   </Tabs>
                 </Paper>
                 <TabPanel value={tab} index={0}>
