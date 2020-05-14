@@ -1269,3 +1269,45 @@ SVG ICONS STYLE
 .share_post {
   margin-top: 2px;
 }
+
+/* ErrorBoundary style begins */
+.error-content {
+  margin-top: 70px;
+}
+
+.error_Heading {
+  text-align: center;
+  display: flex;
+  padding: 5px;
+  justify-content: center;
+  height: 50px;
+  background-color: aliceblue;
+}
+
+.error_content_detail {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: cornsilk;
+}
+
+.error_oops {
+  display: inline-block;
+  width: 50%;
+  align-items: center;
+  text-align: center;
+}
+
+.error_details {
+  display: inline-block;
+  width: 360px;
+  align-items: center;
+}
+
+.error_fallback {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 25px;
+}
+/* ErrorBoundary style ends */

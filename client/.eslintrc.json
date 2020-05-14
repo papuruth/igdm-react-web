@@ -3,9 +3,7 @@
   "parser": "babel-eslint",
   "extends": ["airbnb"],
   "env": {
-    "browser": true,
-    "jest": true,
-    "node": true
+    "browser": true
   },
   "plugins": ["react", "jsx-a11y", "import"],
   "rules": {
@@ -21,6 +19,7 @@
     "react/prop-types": "off",
     "max-len": ["error", { "code": 300 }],
     "import/no-cycle": "off",
+    "single-quote": "off",
     "no-unused-vars": [
       "error",
       {
@@ -32,8 +31,7 @@
       {
         "extensions": [".js", ".jsx"]
       }
-    ],
-    "single-quote": "off"
+    ]
   },
   "settings": {
     "import/resolver": {
