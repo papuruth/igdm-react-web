@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
 import { timelineAction } from '@/redux/timeline/timelineAction';
-import { StyledContainer } from './styles';
+import React from 'react';
 import Timeline from '../Timeline';
+import { StyledContainer } from './styles';
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -13,10 +13,18 @@ export default class Home extends React.Component {
   }
 
   render() {
-    const { timelines, dispatch, hasMore } = this.props;
+    const { timelines, dispatch, hasMore, user, greetingsFlag } = this.props;
     return (
       <StyledContainer>
-        {timelines.length > 0 && <Timeline data={timelines} dispatch={dispatch} hasMore={hasMore} />}
+        {timelines.length > 0 && (
+          <Timeline
+            data={timelines}
+            dispatch={dispatch}
+            hasMore={hasMore}
+            user={user}
+            greetingsFlag={greetingsFlag}
+          />
+        )}
       </StyledContainer>
     );
   }

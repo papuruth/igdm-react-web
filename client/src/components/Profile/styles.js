@@ -731,5 +731,14 @@ export const HighlightCarouselItemCaptionSpan = styled.span``;
 export const loaderCss = css`
   margin-top: 10px;
   position: absolute;
-  left: 50%
+  left: 50%;
+`;
+
+export const ProfilePhotoLoaderDiv = styled.div`
+  position: absolute;
+  top: 0;
+  background: #00000047;
+  left: 0;
+  width: 100%;
+  height: 100%;
 `;

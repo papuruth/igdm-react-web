@@ -8,27 +8,20 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
-import React from 'react';
+import closeIcon from '@/assets/images/close.png';
+import instaIcon from '@/assets/images/icon.png';
+import ChatBox from '@/containers/ChatBox';
+import { fetchChatListAction, fileUploadAction, getSingleChatAction, getUnfollowersAction, searchUser, sendAudioAction, sendMessageAction, showLoaderAction } from '@/redux/chats/chatsAction';
+import Toast from '@/utils/toast';
 import { Avatar, Button } from '@material-ui/core';
-import {
-  AccountCircle, CameraAlt, Close, InsertEmoticon, Mic, Pause, PlayArrow, Send, Stop,
-} from '@material-ui/icons';
+import { AccountCircle, CameraAlt, Close, InsertEmoticon, Mic, Pause, PlayArrow, Send, Stop } from '@material-ui/icons';
 import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete';
 import { emojiIndex, Picker } from 'emoji-mart';
 import 'emoji-mart/css/emoji-mart.css';
+import React from 'react';
 import AudioAnalyser from 'react-audio-analyser';
 import ClipLoader from 'react-spinners/ClipLoader';
-import instaIcon from '@/assets/images/icon.png';
-import closeIcon from '@/assets/images/close.png';
-import ChatBox from '@/containers/ChatBox';
-import {
-  fetchChatListAction, fileUploadAction, getSingleChatAction, getUnfollowersAction, searchUser, sendAudioAction, sendMessageAction, showLoaderAction,
-} from '@/redux/chats/chatsAction';
-import { changeGreetingFlagAction, userLogout } from '@/redux/user/userAction';
-import Toast from '@/utils/toast';
-import {
-  isActive, markAsRead, scrollToChatBottom, setActive,
-} from './helperFunctions';
+import { isActive, markAsRead, scrollToChatBottom, setActive } from './helperFunctions';
 import { renderMessage, renderUnfollowers } from './rendererFunction';
 import RenderSearchResult from './renderSearchResult';
 import RenderUserList from './renderUserList';
@@ -117,17 +110,6 @@ class DirectMessage extends React.Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      const { user, greetingsFlag, dispatch } = this.props;
-      if (greetingsFlag) {
-        Toast.success(
-          `Hello, ${
-            user.full_name || user.username
-          }! Welcome to IGDM React Web.`,
-        );
-        dispatch(changeGreetingFlagAction(false));
-      }
-    }, 0);
     document.addEventListener('mousedown', this.handleClickOutside);
   }
 
@@ -270,12 +252,6 @@ class DirectMessage extends React.Component {
     event.preventDefault();
     const viewer = document.querySelector('.viewer');
     viewer.classList.remove('active');
-  };
-
-  logout = () => {
-    const { dispatch, user } = this.props;
-    dispatch(userLogout(user.full_name || user.username));
-    dispatch(changeGreetingFlagAction(false));
   };
 
   sendFile = () => {
@@ -428,7 +404,7 @@ class DirectMessage extends React.Component {
             />
             <div
               className="dropdown-menu active"
-              // onMouseLeave={this.hideProfile}
+              onMouseLeave={this.hideProfile}
               id="profiledropdown"
             >
               <div
@@ -446,16 +422,6 @@ class DirectMessage extends React.Component {
                 onClick={this.handleNonFollowers}
               >
                 Users not following back
-              </div>
-              <div
-                className="dropdown-item"
-                id="logout"
-                onClick={this.logout}
-                role="button"
-                tabIndex={0}
-                onKeyPress={this.logout}
-              >
-                Log out
               </div>
             </div>
             <div className="search-header col-md-auto">

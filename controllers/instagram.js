@@ -256,15 +256,16 @@ exports.getUnfollowers = function () {
       newUsers.forEach((user) => allUsers.push(user));
       // moreAvailable maybe null. We are dodging that.
       if (
-        usersGetter.moreAvailable === false
-        && otherUsersGetter.moreAvailable === false
+        usersGetter.moreAvailable === false &&
+        otherUsersGetter.moreAvailable === false
       ) {
         compare();
       } else if (usersGetter.moreAvailable !== false) {
         usersGetter
           .items()
           .then((users) =>
-            getUsers(users, allUsers, usersGetter, otherUsersGetter))
+            getUsers(users, allUsers, usersGetter, otherUsersGetter),
+          )
           .catch(reject);
       }
     };
@@ -354,7 +355,8 @@ exports.timeline = () =>
 
 let userFeed;
 exports.userFeeds = (userId, feeds) => {
-  const needsNewUserFeed = Object.keys(feeds).length === 0 || feeds.user.pk !== userId;
+  const needsNewUserFeed =
+    Object.keys(feeds).length === 0 || feeds.user.pk !== userId;
   const getMoreFeeds = (feeds, resolve, reject) => {
     userFeed
       .request()
@@ -374,30 +376,92 @@ exports.userFeeds = (userId, feeds) => {
   });
 };
 
-exports.getFullUserInfo = (userId) => new Promise((resolve, reject) => {
-  igClient.user.info(userId).then(resolve).catch(reject);
-});
+exports.getFullUserInfo = (userId) =>
+  new Promise((resolve, reject) => {
+    igClient.user.info(userId).then(resolve).catch(reject);
+  });
 
-exports.getFriendShipInfo = (userId) => new Promise((resolve, reject) => {
-  igClient.friendship.show(userId).then(resolve).catch(reject);
-});
+exports.getFriendShipInfo = (userId) =>
+  new Promise((resolve, reject) => {
+    igClient.friendship.show(userId).then(resolve).catch(reject);
+  });
 
-exports.getFollowing = (userId) => new Promise((resolve, reject) => {
-  igClient.feed
-    .accountFollowing(userId)
-    .request()
-    .then(resolve)
-    .catch(reject);
-});
+exports.getFollowing = (userId) =>
+  new Promise((resolve, reject) => {
+    igClient.feed
+      .accountFollowing(userId)
+      .request()
+      .then(resolve)
+      .catch(reject);
+  });
 
-exports.getHighlights = (userId) => new Promise((resolve, reject) => {
-  igClient.highlights.highlightsTray(userId).then(resolve).catch(reject);
-});
+exports.getHighlights = (userId) =>
+  new Promise((resolve, reject) => {
+    igClient.highlights.highlightsTray(userId).then(resolve).catch(reject);
+  });
 
-exports.getsuggestedUser = (userId) => new Promise((resolve, reject) => {
-  igClient.discover.chaining(userId).then(resolve).catch(reject);
-});
+exports.getsuggestedUser = (userId) =>
+  new Promise((resolve, reject) => {
+    igClient.discover.chaining(userId).then(resolve).catch(reject);
+  });
 
-exports.searchExact = (username) => new Promise((resolve, reject) => {
-  igClient.user.searchExact(username).then(resolve).catch(reject);
-});
+exports.searchExact = (username) =>
+  new Promise((resolve, reject) => {
+    igClient.user.searchExact(username).then(resolve).catch(reject);
+  });
+
+exports.updateUserProfilePhoto = async (filePath) => {
+  try {
+    const buffer = await readFileAsync(filePath);
+    const response = await igClient.account.changeProfilePicture(buffer);
+    return { response };
+  } catch (error) {
+    return { error, filePath };
+  }
+};
+
+exports.removeUserProfilePhoto = () => {
+  return new Promise((resolve, reject) => {
+    igClient.account.removeProfilePicture().then(resolve).catch(reject);
+  });
+};
+
+exports.getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    igClient.account.currentUser().then(resolve).catch(reject);
+  });
+};
+
+exports.saveProfile = (formData) => {
+  return new Promise((resolve, reject) => {
+    igClient.account.editProfile(formData).then(resolve).catch(reject);
+  });
+};
+
+exports.test = async (req, res) => {
+  try {
+    const {
+      username,
+      first_name,
+      email,
+      external_url,
+      gender,
+      biography,
+      phone_number,
+    } = req.body;
+    console.log(username);
+    const response = await igClient.account.editProfile({
+      username,
+      first_name,
+      email,
+      external_url,
+      gender,
+      biography,
+      phone_number,
+    });
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error.message);
+  }
+};

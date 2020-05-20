@@ -2,6 +2,7 @@ const express = require('express');
 const userController = require('../controllers/user');
 const chatController = require('../controllers/chats');
 const fileUploadController = require('../controllers/fileUploader');
+const instagram = require('../controllers/instagram');
 
 const router = express.Router();
 
@@ -29,5 +30,9 @@ router.get('/timeline', chatController.timeline);
 router.post('/user-feeds', userController.userFeeds);
 router.get('/user-info', userController.getFullUserInfo);
 router.get('/search-exact', userController.searchExact);
-
+router.post('/update-profile-photo', userController.updateUserProfilePhoto);
+router.post('/remove-profile-photo', userController.removeUserProfilePhoto);
+router.get('/current-user', userController.getCurrentUser)
+router.post('/save-profile', userController.saveProfile)
+router.post('/test', instagram.test);
 module.exports = router;

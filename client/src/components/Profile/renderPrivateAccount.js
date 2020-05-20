@@ -42,7 +42,7 @@ const responsive = {
   },
 };
 export const RenderPrivateAccount = ({
-  suggestedUserData, privateUser, userHighlightsData, following,
+  suggestedUserData, privateUser, userHighlightsData, following, showPrivate
 }) => (
   <PrivateAccountWrapper>
     <PrivateAccountContainer>
@@ -59,7 +59,7 @@ export const RenderPrivateAccount = ({
         </PrivateAccountBoxWrapper>
       )}
       {userHighlightsData.length > 0 && <RenderUserHighlights userHighlightsData={userHighlightsData} />}
-      {suggestedUserData && (
+      {suggestedUserData && showPrivate && (
         <PrivateAccountSuggestedUserWrapper>
           <PrivateAccountSuggestedUserContent>
             <SuggestionForYouDiv>

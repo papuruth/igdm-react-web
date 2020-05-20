@@ -1,7 +1,7 @@
 {
   "root": true,
   "parser": "babel-eslint",
-  "extends": ["airbnb"],
+  "extends": ["airbnb", "prettier"],
   "env": {
     "browser": true
   },
@@ -17,7 +17,10 @@
     "no-console": "off",
     "no-shadow": "off",
     "react/prop-types": "off",
-    "max-len": ["error", { "code": 300 }],
+    "max-len": [
+      "error",
+      {"code": 300,  "ignorePattern": "^import|const\\s.+=\\s*require\\(" }
+    ],
     "import/no-cycle": "off",
     "single-quote": "off",
     "no-unused-vars": [

@@ -1,16 +1,17 @@
 /* eslint-disable react/prop-types */
 import {
   fullUserInfoAction,
-  userFeedAction,
   searchExactUserAction,
+  userFeedAction,
 } from '@/redux/user/userAction';
+import Toast from '@/utils/toast';
 import { Box } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import { BookmarkBorderOutlined, GridOn, LiveTv } from '@material-ui/icons';
 import React from 'react';
-import { GridOn, LiveTv, BookmarkBorderOutlined } from '@material-ui/icons';
 import { RenderPrivateAccount } from './renderPrivateAccount';
 import { RenderProfileHeader } from './renderProfileHeader';
 import RenderUserFeeds from './renderUserFeeds';
@@ -28,9 +29,7 @@ const useStyles = {
 };
 
 const TabPanel = (props) => {
-  const {
-    children, value, index, ...other
-  } = props;
+  const { children, value, index, ...other } = props;
 
   return (
     <div
@@ -58,55 +57,79 @@ class Profile extends React.Component {
     super(props);
     this.state = {
       tab: 0,
+      showPrivate: false,
     };
-    const {
-      dispatch, user, userFeeds, location, match,
-    } = props;
+    const { dispatch, user, userFeeds, location, match } = props;
     const { pk, is_private } = location.state || user;
     const { username } = match.params;
-    console.log(this.props);
     if (is_private && location.state) {
-      dispatch(fullUserInfoAction(pk));
+      dispatch(fullUserInfoAction(pk, user.pk));
       dispatch(userFeedAction(pk, userFeeds));
     } else if (!location.state && username !== user.username) {
       dispatch(searchExactUserAction(username));
     } else {
-      dispatch(fullUserInfoAction(pk));
+      dispatch(fullUserInfoAction(pk, user.pk));
       dispatch(userFeedAction(pk, userFeeds));
     }
   }
 
   componentDidUpdate(prevProps) {
-    console.log(this.props, prevProps);
     const {
-      dispatch, user, location, match, searchExactUserInfo,
+      dispatch,
+      user,
+      location,
+      match,
+      searchExactUserInfo,
+      profilePhotoUpdated,
+      profilePhotoRemoved,
     } = this.props;
     const { pk, is_private } = location.state || user;
     const { username } = match.params;
     if (location.pathname !== prevProps.location.pathname) {
       if (is_private && location.state) {
-        dispatch(fullUserInfoAction(pk));
+        dispatch(fullUserInfoAction(pk, user.pk));
         dispatch(userFeedAction(pk, {}));
       } else {
-        dispatch(fullUserInfoAction(pk));
+        dispatch(fullUserInfoAction(pk, user.pk));
         dispatch(userFeedAction(pk, {}));
       }
     }
     if (
-      !location.state
-      && Object.keys(prevProps.searchExactUserInfo).length === 0
-      && username !== user.username
+      !location.state &&
+      Object.keys(prevProps.searchExactUserInfo).length === 0 &&
+      username !== user.username
     ) {
       const userPk = searchExactUserInfo.pk;
-      console.log('infinite');
-      dispatch(fullUserInfoAction(userPk));
+      dispatch(fullUserInfoAction(userPk, user.pk));
       dispatch(userFeedAction(userPk, {}));
+    }
+
+    if (
+      profilePhotoUpdated !== prevProps.profilePhotoUpdated &&
+      profilePhotoUpdated
+    ) {
+      Toast.success('Profile photo updated.');
+    }
+    if (
+      profilePhotoRemoved !== prevProps.profilePhotoRemoved &&
+      profilePhotoRemoved
+    ) {
+      Toast.success('Profile photo removed.');
     }
   }
 
   handleChange = (event, newValue) => {
     this.setState({
       tab: newValue,
+    });
+  };
+
+  handleShowHideUserSuggestion = (value) => {
+    console.log(value);
+    this.setState((state) => {
+      return {
+        showPrivate: value !== state.showPrivate ? value : state.showPrivate,
+      };
     });
   };
 
@@ -123,16 +146,19 @@ class Profile extends React.Component {
       userFeeds,
       hasMore,
       dispatch,
+      profilePhotoLoader,
     } = this.props;
-    const { tab } = this.state;
+    const { tab, showPrivate } = this.state;
     const { pk, is_private } = location.state ? userInfo : userInfo || user;
     const privateUser = is_private && pk !== user.pk;
-    const suggestedUserData = Object.keys(suggestedUser).length > 0 && suggestedUser.users
-      ? suggestedUser.users
-      : '';
-    const userHighlightsData = Object.keys(highlights).length > 0 && highlights.tray
-      ? highlights.tray
-      : '';
+    const suggestedUserData =
+      Object.keys(suggestedUser).length > 0 && suggestedUser.users
+        ? suggestedUser.users
+        : '';
+    const userHighlightsData =
+      Object.keys(highlights).length > 0 && highlights.tray
+        ? highlights.tray
+        : '';
     const { following } = pk !== user.pk ? friendship : '';
 
     return (
@@ -145,7 +171,10 @@ class Profile extends React.Component {
                   userInfo={userInfo}
                   location={location}
                   user={user}
+                  profilePhotoLoader={profilePhotoLoader}
+                  dispatch={dispatch}
                   friendship={friendship}
+                  showHideUserSuggestion={this.handleShowHideUserSuggestion}
                 />
               </Paper>
             )}
@@ -154,6 +183,7 @@ class Profile extends React.Component {
               privateUser={privateUser}
               userHighlightsData={userHighlightsData}
               following={following}
+              showPrivate={showPrivate}
             />
             {allFeeds.length > 0 && (
               <>

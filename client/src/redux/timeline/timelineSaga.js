@@ -1,4 +1,4 @@
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, delay } from 'redux-saga/effects';
 import api from '@/services/api';
 import { timelineConstants } from './timelineConstants';
 
@@ -31,6 +31,8 @@ function* fetchTimelineSaga() {
     yield put(
       yield call(failure, timelineConstants.FETCH_TIMELINE_FAILURE, error),
     );
+    yield delay(3000);
+    fetchTimelineSaga();
   }
 }
 

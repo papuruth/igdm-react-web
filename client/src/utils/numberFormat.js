@@ -33,5 +33,5 @@ export const formatNumber = (value) => {
       return `${numberSplitted[0]}.${numberSplitted[1] > 0 ? numberSplitted[1] : '0'}${units[length]}`;
     }
   }
-  return NaN;
+  return '';
 };

@@ -4,14 +4,7 @@ import { sessionReducer } from 'redux-react-session';
 import { userReducer, userFeedReducer } from './user/userReducer';
 import chatReducer from './chats/chatsReducer';
 import timelineReducer from './timeline/timelineReducer';
-
-// export default (history) =>
-//   combineReducers({
-//     router: connectRouter(history),
-//     session: sessionReducer,
-//     userReducer,
-//     chatReducer,
-//   });
+import loaderReducer from './Loader/loaderReducer';
 
 export const rootReducer = (history) => {
   const appReducer = combineReducers({
@@ -21,6 +14,7 @@ export const rootReducer = (history) => {
     chatReducer,
     userFeedReducer,
     timelineReducer,
+    loaderReducer,
   });
   return (state, action) => appReducer(state, action);
 };

@@ -18,10 +18,12 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
+import Toast from '@/utils/toast';
 import { Player } from 'video-react';
 import BigPlayButton from 'video-react/lib/components/BigPlayButton';
 import ControlBar from 'video-react/lib/components/control-bar/ControlBar';
 import Shortcut from 'video-react/lib/components/Shortcut';
+import { changeGreetingFlagAction } from '@/redux/user/userAction';
 import { StyledContainer } from './styles';
 
 const useStyles = (theme) => ({
@@ -99,12 +101,26 @@ class Timeline extends React.Component {
   }
 
   componentDidMount() {
+    const { user, greetingsFlag, dispatch } = this.props;
+    console.log(this.props);
+    setTimeout(() => {
+      if (greetingsFlag) {
+        console.log('Hello')
+        Toast.info(
+          `Hello, ${
+            user.full_name || user.username
+          }! Welcome to IGDM React Web.`,
+        );
+        dispatch(changeGreetingFlagAction(false));
+      }
+    }, 0);
     // subscribe state change
     try {
       this.player.subscribeToStateChange(this.handleStateChange);
       const videoTag = document.getElementsByTagName('video');
       Array.from(videoTag).forEach((element) =>
-        element.setAttribute('onContextMenu', 'return false;'));
+        element.setAttribute('onContextMenu', 'return false;'),
+      );
     } catch (error) {
       console.log(error.message);
     }
@@ -116,7 +132,8 @@ class Timeline extends React.Component {
       this.player.subscribeToStateChange(this.handleStateChange);
       const videoTag = document.getElementsByTagName('video');
       Array.from(videoTag).forEach((element) =>
-        element.setAttribute('onContextMenu', 'return false;'));
+        element.setAttribute('onContextMenu', 'return false;'),
+      );
     } catch (error) {
       console.log(error.message);
     }
@@ -174,6 +191,7 @@ class Timeline extends React.Component {
 
   render() {
     const { data, hasMore, classes } = this.props;
+    const filteredTImeline = data && data.filter((item) => 'media_or_ad' in item);
     const { expanded } = this.state;
     const responsive = {
       desktop: {
@@ -199,14 +217,15 @@ class Timeline extends React.Component {
           loader=""
           threshold={2000}
         >
-          {data
-            && data.map(({ media_or_ad }) => {
+          {filteredTImeline &&
+            filteredTImeline.map(({ media_or_ad }) => {
               const item = media_or_ad;
               if (item) {
                 const { username, profile_pic_url } = item.user;
-                const isAd = 'ad_action' in item
-                  || 'ad_header' in item
-                  || 'ad_header_style' in item;
+                const isAd =
+                  'ad_action' in item ||
+                  'ad_header' in item ||
+                  'ad_header_style' in item;
                 const location = item.location ? item.location.name : '';
                 const mediaUrl = item.image_versions2
                   ? item.image_versions2.candidates[0]
@@ -223,13 +242,14 @@ class Timeline extends React.Component {
                   like_count,
                   code,
                 } = item;
-                const liker = facepile_top_likers
-                  && facepile_top_likers.filter(
+                const liker =
+                  facepile_top_likers &&
+                  facepile_top_likers.filter(
                     (likerItem) => likerItem.username === top_likers[0],
                   )[0];
                 return (
                   !isAd && (
-                    <Card className={classes.root} key={item.id.split('_')[0]}>
+                    <Card className={classes.root} key={item.pk}>
                       <CardHeader
                         avatar={(
                           <Avatar

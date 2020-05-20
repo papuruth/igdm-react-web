@@ -7,7 +7,7 @@
     "build": "cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "eject": "craco eject",
-    "lint": "eslint **/*.{js,jsx}"
+    "lint": "eslint -c .eslintrc.json **/*.{js,jsx}"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -29,6 +29,7 @@
     "@emotion/core": "^10.0.28",
     "@material-ui/core": "^4.9.11",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.53",
     "@webscopeio/react-textarea-autocomplete": "^4.6.3",
     "a11y-react-emoji": "^1.1.2",
     "axios": "^0.19.2",
@@ -66,6 +67,7 @@
     "reduxsauce": "^1.1.2",
     "seamless-immutable": "^7.1.4",
     "styled-components": "^5.1.0",
+    "validator": "^13.0.0",
     "video-react": "^0.14.1"
   },
   "devDependencies": {

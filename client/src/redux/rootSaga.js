@@ -9,6 +9,10 @@ import {
   searchExactUserWatcherSaga,
   userAuthStartCheckpointWatcherSaga,
   userAuthHandleCheckpointWatcherSaga,
+  updateUserProfilePictureWatcherSaga,
+  removeUserProfilePictureWatcherSaga,
+  saveProfileWatcherSaga,
+  getCurrentUserWatcherSaga,
 } from './user/userSaga';
 import {
   chatListFetchWatcher,
@@ -29,6 +33,7 @@ import {
   unfollowUserWatcherSaga,
 } from './chats/chatsSaga';
 import { fetchTimelineWatcherSaga } from './timeline/timelineSaga';
+import { loaderWatcherSaga } from './Loader/loaderSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -58,5 +63,10 @@ export default function* rootSaga() {
     userFeedWatcherSaga(),
     fullUserInfoWatcherSaga(),
     searchExactUserWatcherSaga(),
+    updateUserProfilePictureWatcherSaga(),
+    removeUserProfilePictureWatcherSaga(),
+    loaderWatcherSaga(),
+    getCurrentUserWatcherSaga(),
+    saveProfileWatcherSaga(),
   ]);
 }

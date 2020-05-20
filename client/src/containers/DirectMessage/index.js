@@ -3,7 +3,6 @@ import DirectMessage from '@/components/DirectMessage';
 
 const mapStateToProps = (state) => {
   const { user, authenticated } = state.session;
-  const { greetingsFlag } = state.userReducer;
   const {
     chatsList,
     chatListError,
@@ -31,7 +30,6 @@ const mapStateToProps = (state) => {
     getSingleChatError,
     sentMessageSuccessStatus,
     olderMessages,
-    greetingsFlag,
     chatLoader: chatLoader || false,
     searchUserResult: searchUserResult || [],
     fileUploadStatus: fileUploadStatus || false,

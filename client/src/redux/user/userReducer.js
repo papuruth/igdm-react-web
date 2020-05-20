@@ -3,10 +3,14 @@ import { userConstants } from './userConstants';
 const userAuthInitialState = {
   errorType: '',
   errorPayload: '',
-  greetingsFlag: false,
   authStatus: false,
   isCheckpoint: false,
   logoutStatus: {},
+  profileUpdateSuccess: false,
+  profilePhotoUpdated: false,
+  profilePhotoRemoved: false,
+  updatedUserInfo: {},
+  currentUser: {},
 };
 export function userReducer(state = userAuthInitialState, action) {
   switch (action.type) {
@@ -18,6 +22,7 @@ export function userReducer(state = userAuthInitialState, action) {
       return {
         ...state,
         authStatus: action.payload,
+        greetingsFlag: true,
       };
     case userConstants.GREETINGS_FLAG_SUCCESS:
       return {
@@ -48,6 +53,41 @@ export function userReducer(state = userAuthInitialState, action) {
     case userConstants.USER_LOGOUT_FAILURE:
       return {
         logoutError: action.payload,
+      };
+    case userConstants.UPDATE_PROFILE_PICTURE_SUCCESS:
+      return {
+        ...state,
+        updatedUserInfo: action.payload.userInfo,
+        profilePhotoUpdated: true,
+        profilePhotoRemoved: false,
+        profileUpdateSuccess: true,
+      };
+    case userConstants.UPDATE_PROFILE_PICTURE_FAILURE:
+      return {
+        profilePhotoUpdateError: action.payload,
+      };
+    case userConstants.REMOVE_PROFILE_PICTURE_SUCCESS:
+      return {
+        ...state,
+        updatedUserInfo: action.payload.userInfo,
+        profilePhotoRemoved: true,
+        profilePhotoUpdated: false,
+        profileUpdateSuccess: true,
+      };
+    case userConstants.REMOVE_PROFILE_PICTURE_FAILURE:
+      return {
+        ...state,
+        profilePhotoRemoveError: action.error,
+      };
+    case userConstants.GET_CURRENT_USER_SUCCESS:
+      return {
+        ...state,
+        currentUser: action.payload,
+      };
+    case userConstants.GET_CURRENT_USER_FAILURE:
+      return {
+        ...state,
+        currentUserError: action.error,
       };
     default:
       return state;

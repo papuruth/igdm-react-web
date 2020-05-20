@@ -1,7 +1,9 @@
 /* eslint-disable no-shadow */
 
 const { IgPrivateUserError } = require('instagram-private-api');
+const fs = require('fs');
 const instagram = require('./instagram');
+const fileUploader = require('./fileUploader');
 
 exports.authenticate = (req, res) => {
   const { username, password } = req.body;
@@ -146,7 +148,7 @@ exports.getFullUserInfo = async (req, res) => {
     const userInfo = await instagram.getFullUserInfo(userId);
     const friendship = await instagram.getFriendShipInfo(userId);
     const highlights = await instagram.getHighlights(userId);
-    const suggestedUser = await instagram.getsuggestedUser(userId);
+    const suggestedUser = userInfo.has_chaining ? await instagram.getsuggestedUser(userId) : [];
     res.status(200).send({
       userInfo,
       friendship,
@@ -154,7 +156,7 @@ exports.getFullUserInfo = async (req, res) => {
       suggestedUser,
     });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message);
   }
 };
 
@@ -167,3 +169,48 @@ exports.searchExact = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.updateUserProfilePhoto = async (req, res) => {
+  try {
+    const multerResponse = await fileUploader.profilePhotoUpdater(req);
+    const { file } = multerResponse;
+    const { path } = file;
+    const { response } = await instagram.updateUserProfilePhoto(path);
+    fs.unlinkSync(path);
+    res.status(200).send(response);
+  } catch ({ error, filePath }) {
+    fs.unlinkSync(filePath);
+    res.status(400).send(error.message);
+  }
+};
+
+exports.removeUserProfilePhoto = async (req, res) => {
+  try {
+    const response = await instagram.removeUserProfilePhoto();
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const response = await instagram.getCurrentUser();
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.saveProfile = async(req, res) => {
+  try {
+    const formData = req.body;
+    const response = await instagram.saveProfile(formData);
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send({
+      status: 'fail',
+      message: "You can't change your name right now because you've changed it twice within 14 days"
+    });
+  }
+}

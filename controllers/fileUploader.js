@@ -30,9 +30,10 @@ exports.fileUploader = async (req, res) => {
     if (req.file) {
       const { recepients } = req.body;
       const filePath = req.file.path;
-      const filePathJPG = path.parse(filePath).ext === '.png'
-        ? `public/${path.parse(filePath).name}.jpg`
-        : '';
+      const filePathJPG =
+        path.parse(filePath).ext === '.png'
+          ? `public/${path.parse(filePath).name}.jpg`
+          : '';
       let response;
       if (filePathJPG) {
         sharp(filePath)
@@ -154,5 +155,22 @@ exports.sendAudio = async (req, res) => {
       }
     }
     return false;
+  });
+};
+
+exports.profilePhotoUpdater = (req) => {
+  return new Promise((resolve, reject) => {
+    upload(req, null, (err) => {
+      if (err instanceof multer.MulterError) {
+        reject(err);
+      }
+      if (err) {
+        reject(err);
+      }
+      if (req.file) {
+        resolve(req);
+      }
+      return 0;
+    });
   });
 };

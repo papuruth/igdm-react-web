@@ -11,14 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import {
-  AccountCircle,
-  Cancel,
-  ExploreOutlined,
-  FavoriteBorder,
-  Home,
-  Search,
-} from '@material-ui/icons';
+import { Cancel, ExploreOutlined, FavoriteBorder, Home, Search } from '@material-ui/icons';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -109,6 +102,10 @@ class Header extends React.Component {
     };
   }
 
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  }
+
   componentDidUpdate(prevProps) {
     const { searchUserResult, dispatch, searchUserLoader } = this.props;
     if (searchUserResult !== prevProps.searchUserResult && searchUserLoader) {
@@ -125,6 +122,23 @@ class Header extends React.Component {
       },
       () => this.handleUserSearch(value),
     );
+  };
+
+  handleClickOutside = (event) => {
+    if (
+      this.searchToggle &&
+      this.searchToggle.previousSibling !== event.target.parentElement &&
+      !this.searchToggle.contains(event.target) &&
+      this.searchInputRef !== event.target.parentElement
+    ) {
+      this.searchToggle.classList.add('hide');
+    }
+  };
+
+  showSearchResult = () => {
+    if (this.searchToggle) {
+      this.searchToggle.classList.remove('hide');
+    }
   };
 
   handleUserSearch = (value) => {
@@ -147,7 +161,10 @@ class Header extends React.Component {
       {
         searchText: '',
       },
-      () => this.handleUserSearch(''),
+      () => {
+        const { dispatch } = this.props;
+        dispatch(searchUser(''));
+      },
     );
   };
 
@@ -162,9 +179,7 @@ class Header extends React.Component {
   };
 
   render() {
-    const {
-      classes, searchUserResult, searchUserLoader, user,
-    } = this.props;
+    const { classes, searchUserResult, searchUserLoader, user } = this.props;
     const { profile_pic_url, username } = user;
     const { mobileMoreAnchorEl, searchText } = this.state;
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -181,46 +196,60 @@ class Header extends React.Component {
         onClose={this.handleMobileMenuClose}
       >
         <MenuItem>
-          <IconButton
-            aria-label="go to home"
-            color="inherit"
-            onClick={this.resetTimeline}
-          >
-            <Link to="/">
+          <Link to="/">
+            <IconButton aria-label="show 4 new mails" color="inherit">
               <Home />
-            </Link>
-          </IconButton>
-          <p>Home</p>
+            </IconButton>
+            <span>Home</span>
+          </Link>
         </MenuItem>
         <MenuItem>
-          <IconButton aria-label="show 4 new mails" color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <SharePost />
-            </Badge>
-          </IconButton>
-          <p>Messages</p>
+          <Link to="/direct/inbox">
+            <IconButton aria-label="show 4 new mails" color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <SharePost />
+              </Badge>
+            </IconButton>
+            <span>Messages</span>
+          </Link>
         </MenuItem>
         <MenuItem>
-          <IconButton aria-label="explore" color="inherit">
-            <ExploreOutlined />
-          </IconButton>
-          <p>Explore</p>
+          <Link to="/explore">
+            <IconButton aria-label="show 4 new mails" color="inherit">
+              <ExploreOutlined />
+            </IconButton>
+            <span>Explore</span>
+          </Link>
         </MenuItem>
         <MenuItem>
-          <IconButton aria-label="activity" color="inherit">
-            <FavoriteBorder />
-          </IconButton>
-          <p>Activity</p>
+          <Link to="/accounts/activity">
+            <IconButton aria-label="show 4 new mails" color="inherit">
+              <FavoriteBorder />
+            </IconButton>
+            <span>Activity</span>
+          </Link>
         </MenuItem>
         <MenuItem>
-          <IconButton
-            aria-label="account of current user"
-            aria-controls="primary-search-account-menu"
-            color="inherit"
+          <Link
+            key={user.pk}
+            to={{
+              pathname: `/${username}`,
+              state: user,
+            }}
           >
-            <AccountCircle />
-          </IconButton>
-          <p>Profile</p>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls={menuId}
+              color="inherit"
+            >
+              <Avatar
+                className={classes.profileAvatar}
+                alt=""
+                src={profile_pic_url}
+              />
+            </IconButton>
+            <span>Profile</span>
+          </Link>
         </MenuItem>
       </Menu>
     );
@@ -236,6 +265,10 @@ class Header extends React.Component {
                 <Search />
               </div>
               <InputBase
+                ref={(searchInput) => {
+                  this.searchInputRef = searchInput;
+                }}
+                onFocus={this.showSearchResult}
                 placeholder="Search…"
                 classes={{
                   root: classes.inputRoot,
@@ -261,7 +294,11 @@ class Header extends React.Component {
                 )}
               </div>
               {searchUserResult.length > 0 && (
-                <div>
+                <div
+                  ref={(search) => {
+                    this.searchToggle = search;
+                  }}
+                >
                   <div className="search-result-arrow" />
                   <div className="search-result-wrapper">
                     <div className="search-result-content">
@@ -278,9 +315,10 @@ class Header extends React.Component {
                             className="search-result-content-child-anchor"
                             key={pk}
                             to={{
-                              pathname: username,
+                              pathname: `/${username}`,
                               state: item,
                             }}
+                            onClick={this.clearSearch}
                           >
                             <div className="search-result-anchor-content">
                               <div
@@ -345,7 +383,7 @@ class Header extends React.Component {
               <Link
                 key={user.pk}
                 to={{
-                  pathname: username,
+                  pathname: `/${username}`,
                   state: user,
                 }}
               >

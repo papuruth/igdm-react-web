@@ -1,0 +1,4 @@
+export const loaderConstants = {
+  SHOW_LOADER_REQUEST: 'SHOW_LOADER_REQUEST',
+  SHOW_LOADER_SUCCESS: 'SHOW_LOADER_SUCCESS',
+};

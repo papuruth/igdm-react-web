@@ -1,46 +1,62 @@
 /* eslint-disable react/prop-types */
 /** @jsx jsx */
-import { formatNumber } from '@/utils/numberFormat';
-import { ArrowDropDown, MoreHoriz, Settings } from '@material-ui/icons';
 import { ReactComponent as FollowedFriends } from '@/assets/images/followed.svg';
+import { loaderAction } from '@/redux/Loader/loaderAction';
+import { removeUserProfilePictureAction, updateUserProfilePictureAction, userLogout } from '@/redux/user/userAction';
+import { formatNumber } from '@/utils/numberFormat';
 import { jsx } from '@emotion/core';
-import {
-  accountDetaildFollowDownBtnWrapper,
-  accountDetailsConfigWrapper,
-  accountDetailsEditProfile,
-  accountDetailsEditProfileBtn,
-  accountDetailsFollowBtnContent,
-  accountDetailsFollowBtnWrapper,
-  accountDetailsFollowDownBtnContent,
-  accountDetailsFollowedByContent,
-  accountDetailsFollowedByWrapper,
-  accountDetailsFollowedUser,
-  accountDetailsFollowingListWrapper,
-  accountDetailsFollowWrapper,
-  accountDetailsInfoName,
-  accountDetailsInfoWrapper,
-  accountDetailsListContent,
-  accountDetailsListContentChild,
-  accountDetailsListContentChildSpan,
-  accountDetailsSettingIconContent,
-  accountDetailsSettingIconWrapper,
-  accountDetailsUsername,
-  accountDetailsVerified,
-  accountDetailsWrapper,
-  accountProfileContent,
-  accountProfileContent1,
-  accountProfileContentBtn,
-  accountProfileHeader,
-  accountProfileImage,
-  accountProfilePicWrapper,
-  profilePicInput,
-} from './styles';
+import { blue } from '@material-ui/core/colors';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
+import { ArrowDropDown, MoreHoriz, Settings } from '@material-ui/icons';
+import { useState } from 'react';
+import { FadeLoader } from 'react-spinners';
+import './profile.component.css';
+import { Link } from 'react-router-dom';
+import { accountDetaildFollowDownBtnWrapper, accountDetailsConfigWrapper, accountDetailsEditProfile, accountDetailsEditProfileBtn, accountDetailsFollowBtnContent, accountDetailsFollowBtnWrapper, accountDetailsFollowDownBtnContent, accountDetailsFollowedByContent, accountDetailsFollowedByWrapper, accountDetailsFollowedUser, accountDetailsFollowingListWrapper, accountDetailsFollowWrapper, accountDetailsInfoName, accountDetailsInfoWrapper, accountDetailsListContent, accountDetailsListContentChild, accountDetailsListContentChildSpan, accountDetailsSettingIconContent, accountDetailsSettingIconWrapper, accountDetailsUsername, accountDetailsVerified, accountDetailsWrapper, accountProfileContent, accountProfileContent1, accountProfileContentBtn, accountProfileHeader, accountProfileImage, accountProfilePicWrapper, ProfilePhotoLoaderDiv, profilePicInput } from './styles';
+
+const useStyles = makeStyles((_theme) => ({
+  avatar: {
+    backgroundColor: blue[100],
+    color: blue[600],
+  },
+  listTxtUpload: {
+    color: '#0095f6',
+    fontSize: '14px',
+    fontWeight: '700!important',
+    textAlign: 'center',
+  },
+  listTxtRemove: {
+    color: '#ed4956',
+    fontSize: '14px',
+    fontWeight: '700!important',
+    textAlign: 'center',
+  },
+  listTxtBorder: {
+    borderTop: '1px solid #dbdbdb',
+  },
+  listTxtCancel: {
+    fontSize: '14px',
+    textAlign: 'center',
+  },
+  txtPosition: {
+    textAlign: 'center',
+    borderRadius: '12px',
+  },
+}));
 
 export const RenderProfileHeader = ({
   userInfo,
   user,
   friendship,
   location,
+  dispatch,
+  profilePhotoLoader,
+  showHideUserSuggestion,
 }) => {
   const {
     pk,
@@ -48,6 +64,7 @@ export const RenderProfileHeader = ({
     profile_pic_url,
     follower_count,
     following_count,
+    has_anonymous_profile_picture,
     media_count,
     full_name,
     is_private,
@@ -58,29 +75,87 @@ export const RenderProfileHeader = ({
     mutual_followers_count,
   } = location.state ? userInfo : userInfo || user;
   let moreFollower;
-
   const mutualFollower = [];
   let followerArray;
   if (
-    pk !== user.pk
-    && profile_context_links_with_user_ids.length
-    && profile_context_mutual_follow_ids.length
-    && mutual_followers_count
+    pk !== user.pk &&
+    profile_context_links_with_user_ids &&
+    profile_context_mutual_follow_ids &&
+    mutual_followers_count
   ) {
-    moreFollower = mutual_followers_count - profile_context_mutual_follow_ids.length;
-    followerArray = profile_context_links_with_user_ids.length
-      !== profile_context_mutual_follow_ids.length
-      ? profile_context_links_with_user_ids.slice(
-        0,
-        profile_context_mutual_follow_ids.length,
-      )
-      : profile_context_links_with_user_ids;
+    moreFollower =
+      mutual_followers_count - profile_context_mutual_follow_ids.length;
+    followerArray =
+      profile_context_links_with_user_ids.length !==
+      profile_context_mutual_follow_ids.length
+        ? profile_context_links_with_user_ids.slice(
+            0,
+            profile_context_mutual_follow_ids.length,
+          )
+        : profile_context_links_with_user_ids;
     followerArray.forEach((item) => {
       mutualFollower.push(item.username);
     });
   }
   const { followed_by, following } = pk !== user.pk ? friendship : '';
   const privateUser = is_private && pk !== user.pk;
+  const classes = useStyles();
+  let uploadInputRef;
+  const [showProfileChangeDialog, setProfileChangeDialog] = useState(false);
+  const [showSettingChangeDialog, setSettingChangeDialog] = useState(false);
+  const [showUserSuggestion, setUserSuggestion] = useState(true);
+  const openProfileChanger = () => {
+    if (!has_anonymous_profile_picture) {
+      setProfileChangeDialog(true);
+    } else {
+      uploadInputRef.click();
+    }
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.currentTarget.files[0];
+    if (file) {
+      const data = new FormData();
+      data.append('file', file);
+      data.append('userId', pk);
+      dispatch(updateUserProfilePictureAction(data));
+      setProfileChangeDialog(false);
+      dispatch(loaderAction(true, 'profilePhotoLoader'));
+    }
+  };
+  const resetImageUpload = () => {
+    uploadInputRef.value = '';
+  };
+  const closeProfileChanger = () => {
+    setProfileChangeDialog(false);
+  };
+  const handlePhotoSelect = () => {
+    uploadInputRef.click();
+  };
+  const handleRemovePhoto = () => {
+    dispatch(removeUserProfilePictureAction());
+    setProfileChangeDialog(false);
+    dispatch(loaderAction(true, 'profilePhotoLoader'));
+  };
+
+  const showSettingChanger = () => {
+    setSettingChangeDialog(true);
+  };
+
+  const closeSettingChanger = () => {
+    setSettingChangeDialog(false);
+  };
+
+  const handleLogout = () => {
+    setSettingChangeDialog(false);
+    dispatch(userLogout(user.full_name || user.username));
+  };
+
+  const showHidePrivateArea = () => {
+    showHideUserSuggestion(showUserSuggestion);
+    setUserSuggestion(!showUserSuggestion);
+  };
+
   return (
     <header css={accountProfileHeader}>
       <div css={accountProfilePicWrapper}>
@@ -88,8 +163,13 @@ export const RenderProfileHeader = ({
           <div css={accountProfileContent1}>
             <button
               css={accountProfileContentBtn}
-              title="Change Profile Photo"
+              title={
+                has_anonymous_profile_picture
+                  ? 'Add a profile photo'
+                  : 'Change Profile Photo'
+              }
               type="button"
+              onClick={openProfileChanger}
             >
               <img
                 alt="Change Profile Pic"
@@ -97,6 +177,64 @@ export const RenderProfileHeader = ({
                 src={profile_pic_url}
               />
             </button>
+            {profilePhotoLoader && (
+              <ProfilePhotoLoaderDiv>
+                <FadeLoader color="#123abc" loading />
+              </ProfilePhotoLoaderDiv>
+            )}
+            <Dialog
+              onClose={closeProfileChanger}
+              aria-labelledby="simple-dialog-title"
+              classes={{
+                paper: classes.txtPosition,
+              }}
+              open={showProfileChangeDialog}
+            >
+              <DialogTitle id="simple-dialog-title">
+                Change Profile Photo
+              </DialogTitle>
+              <List>
+                <ListItem
+                  button
+                  onClick={handlePhotoSelect}
+                  key="Upload Photo"
+                  className={classes.listTxtBorder}
+                >
+                  <ListItemText
+                    primary="Upload Photo"
+                    classes={{
+                      primary: classes.listTxtUpload,
+                    }}
+                  />
+                </ListItem>
+                <ListItem
+                  button
+                  onClick={handleRemovePhoto}
+                  key="Remove Current Photo"
+                  className={classes.listTxtBorder}
+                >
+                  <ListItemText
+                    primary="Remove Current Photo"
+                    classes={{
+                      primary: classes.listTxtRemove,
+                    }}
+                  />
+                </ListItem>
+                <ListItem
+                  autoFocus
+                  button
+                  onClick={closeProfileChanger}
+                  className={classes.listTxtBorder}
+                >
+                  <ListItemText
+                    primary="Cancel"
+                    classes={{
+                      primary: classes.listTxtCancel,
+                    }}
+                  />
+                </ListItem>
+              </List>
+            </Dialog>
             <div>
               <form
                 encType="multipart/form-data"
@@ -104,6 +242,11 @@ export const RenderProfileHeader = ({
                 role="presentation"
               >
                 <input
+                  ref={(uploadInput) => {
+                    uploadInputRef = uploadInput;
+                  }}
+                  onChange={handleImageUpload}
+                  onClick={resetImageUpload}
                   accept="image/jpeg,image/png"
                   css={profilePicInput}
                   type="file"
@@ -120,11 +263,11 @@ export const RenderProfileHeader = ({
             <span css={accountDetailsVerified} title="Verified" />
           )}
           {!followed_by && !following && pk === user.pk && (
-            <a css={accountDetailsEditProfile} href="/accounts/edit/">
+            <Link css={accountDetailsEditProfile} to="/accounts/edit">
               <button css={accountDetailsEditProfileBtn} type="button">
                 Edit Profile
               </button>
-            </a>
+            </Link>
           )}
           {following && (
             <a css={accountDetailsEditProfile} href={`/direct/${username}`}>
@@ -142,7 +285,11 @@ export const RenderProfileHeader = ({
           )}
           {following && (
             <span css={accountDetailsEditProfile}>
-              <button css={accountDetailsEditProfileBtn} type="button">
+              <button
+                css={accountDetailsEditProfileBtn}
+                type="button"
+                onClick={showHidePrivateArea}
+              >
                 <ArrowDropDown />
               </button>
             </span>
@@ -159,6 +306,7 @@ export const RenderProfileHeader = ({
                   <button
                     css={accountDetailsFollowDownBtnContent}
                     type="button"
+                    onClick={showHidePrivateArea}
                   >
                     <ArrowDropDown />
                   </button>
@@ -167,10 +315,52 @@ export const RenderProfileHeader = ({
             </span>
           )}
           <div css={accountDetailsSettingIconWrapper}>
-            <button css={accountDetailsSettingIconContent} type="button">
-              {!followed_by && !following && pk === user.pk && <Settings />}
-              {pk !== user.pk && <MoreHoriz />}
-            </button>
+            {!followed_by && !following && pk === user.pk && (
+              <button
+                css={accountDetailsSettingIconContent}
+                type="button"
+                onClick={showSettingChanger}
+              >
+                <Settings />
+              </button>
+            )}
+            {pk !== user.pk && (
+              <button css={accountDetailsSettingIconContent} type="button">
+                <MoreHoriz />
+              </button>
+            )}
+            <Dialog
+              onClose={closeSettingChanger}
+              aria-labelledby="simple-dialog-title"
+              classes={{
+                paper: classes.txtPosition,
+              }}
+              open={showSettingChangeDialog}
+            >
+              <List>
+                <ListItem button onClick={handleLogout} key="Logout">
+                  <ListItemText
+                    primary="Logout"
+                    classes={{
+                      primary: classes.listTxtRemove,
+                    }}
+                  />
+                </ListItem>
+                <ListItem
+                  autoFocus
+                  button
+                  onClick={closeSettingChanger}
+                  className={classes.listTxtBorder}
+                >
+                  <ListItemText
+                    primary="Cancel"
+                    classes={{
+                      primary: classes.listTxtCancel,
+                    }}
+                  />
+                </ListItem>
+              </List>
+            </Dialog>
           </div>
         </div>
         <ul css={accountDetailsFollowingListWrapper}>
@@ -212,8 +402,8 @@ export const RenderProfileHeader = ({
           <h1 css={accountDetailsInfoName}>{full_name}</h1>
           <br />
           <span>
-            {biography
-              && biography.split('\n').map((ele) => <p key={ele}>{ele}</p>)}
+            {biography &&
+              biography.split('\n').map((ele) => <p key={ele}>{ele}</p>)}
           </span>
           {mutualFollower.length > 0 && (
             <a
@@ -226,7 +416,7 @@ export const RenderProfileHeader = ({
                 <span css={accountDetailsFollowedUser}>
                   {mutualFollower.join(', ')}
                 </span>
-                {' +'}
+                {' +'} 
                 {' '}
                 {moreFollower}
                 {' '}

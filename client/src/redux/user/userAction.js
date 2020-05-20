@@ -48,12 +48,30 @@ export const userFeedAction = (userId, feeds) => ({
   },
 });
 
-export const fullUserInfoAction = (userId) => ({
+export const fullUserInfoAction = (userId, pk) => ({
   type: userConstants.FETCH_FULL_USER_INFO_REQUEST,
-  payload: userId,
+  payload: { userId, pk },
 });
 
 export const searchExactUserAction = (username) => ({
   type: userConstants.SEARCH_EXACT_USER_REQUEST,
   payload: username,
+});
+
+export const updateUserProfilePictureAction = (data) => ({
+  type: userConstants.UPDATE_PROFILE_PICTURE_REQUEST,
+  payload: data,
+});
+
+export const removeUserProfilePictureAction = () => ({
+  type: userConstants.REMOVE_PROFILE_PICTURE_REQUEST,
+});
+
+export const getCurrentUserAction = () => ({
+  type: userConstants.GET_CURRENT_USER_REQUEST,
+});
+
+export const saveProfileAction = (formData) => ({
+  type: userConstants.SAVE_PROFILE_REQUEST,
+  payload: formData,
 });

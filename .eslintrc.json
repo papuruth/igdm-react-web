@@ -23,7 +23,10 @@
     "no-restricted-globals": "off",
     "no-console": "off",
     "no-shadow": "off",
-    "max-len": ["error", { "code": 300 }],
+    "max-len": [
+      "error",
+      { "code": 300, "ignorePattern": "^import|const\\s.+=\\s*require\\(" }
+    ],
     "import/no-cycle": "off",
     "no-unused-vars": [
       "error",

@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
+const chalk = require('chalk');
 
 const buildAndGetStoragePath = () => {
   const storagePath = path.join('userData', 'session-cookie');
@@ -67,10 +69,31 @@ const storeCookies = (username, cookies) => {
   }
 };
 
+const rlInterface = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+const portSwitcher = () => {
+  return new Promise((resolve) => {
+    rlInterface.question(
+      chalk.yellow('Would you like to use another? (Y/n): '),
+      (answer) => {
+        if (answer.match(/^[a-zA-Z]+$/) && answer === 'Y') {
+          rlInterface.close();
+          resolve(true);
+        }
+        rlInterface.close();
+        resolve(false)
+      },
+    );
+  })
+};
+
 module.exports = {
   canUseFileStorage,
   guessUsername,
   getStoredCookie,
   clearCookieFiles,
   storeCookies,
+  portSwitcher,
 };

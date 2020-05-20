@@ -3,11 +3,11 @@
 import history from '@/routes/history';
 import api from '@/services/api';
 import { sessionService } from 'redux-react-session';
-import {
-  call, put, takeEvery, delay,
-} from 'redux-saga/effects';
+import { call, put, takeEvery, delay } from 'redux-saga/effects';
 import { persistor } from '@/store/store';
+import toast from '@/utils/toast';
 import { userConstants } from './userConstants';
+import { loaderConstants } from '../Loader/loaderConstants';
 
 export const success = (type, payload) => ({
   type,
@@ -42,7 +42,6 @@ const authenticateUser = async (payload) => {
 function* userAuthSaga(action) {
   const data = yield call(authenticateUser, action.payload);
   if (data && data.type === 'authResponse') {
-    yield put(yield call(success, userConstants.GREETINGS_FLAG_SUCCESS, true));
     yield put(
       yield call(success, userConstants.USER_AUTH_SUCCESS, data.payload),
     );
@@ -252,9 +251,10 @@ export function* userFeedWatcherSaga() {
   yield takeEvery(userConstants.FETCH_USER_FEED_REQUEST, userFeedSaga);
 }
 
-const fullUserInfoService = async (userId) => {
+const fullUserInfoService = async ({ userId, pk }) => {
   try {
     const response = await api.get('/user-info', { params: { userId } });
+    if (userId === pk) sessionService.saveUser(response.data.userInfo);
     return { response: response.data };
   } catch (error) {
     return { error };
@@ -305,4 +305,144 @@ function* searchExactUserSaga(action) {
 
 export function* searchExactUserWatcherSaga() {
   yield takeEvery(userConstants.SEARCH_EXACT_USER_REQUEST, searchExactUserSaga);
+}
+
+const updateUserProfilePictureService = async (data) => {
+  try {
+    const uploadPhotoResponse = await api.post('/update-profile-photo', data);
+    const userId = uploadPhotoResponse.data.user.pk;
+    const response = await api.get('/user-info', { params: { userId } });
+    await sessionService.saveUser(response.data.userInfo);
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* updateUserProfilePictureSaga(action) {
+  const { response, error } = yield call(
+    updateUserProfilePictureService,
+    action.payload,
+  );
+  if (response) {
+    yield put(
+      yield call(
+        success,
+        userConstants.UPDATE_PROFILE_PICTURE_SUCCESS,
+        response,
+      ),
+    );
+    yield put(
+      yield call(success, loaderConstants.SHOW_LOADER_SUCCESS, {
+        type: 'profilePhotoLoader',
+        flag: false,
+      }),
+    );
+  } else {
+    yield put(
+      yield call(failure, userConstants.UPDATE_PROFILE_PICTURE_FAILURE, error),
+    );
+  }
+}
+
+export function* updateUserProfilePictureWatcherSaga() {
+  yield takeEvery(
+    userConstants.UPDATE_PROFILE_PICTURE_REQUEST,
+    updateUserProfilePictureSaga,
+  );
+}
+
+const removeUserProfilePictureService = async () => {
+  try {
+    const removePhotoResponse = await api.post('/remove-profile-photo');
+    const userId = removePhotoResponse.data.user.pk;
+    const response = await api.get('/user-info', { params: { userId } });
+    await sessionService.saveUser(response.data.userInfo);
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* removeUserProfilePictureSaga() {
+  const { response, error } = yield call(removeUserProfilePictureService);
+  if (response) {
+    yield put(
+      yield call(
+        success,
+        userConstants.REMOVE_PROFILE_PICTURE_SUCCESS,
+        response,
+      ),
+    );
+    yield put(
+      yield call(success, loaderConstants.SHOW_LOADER_SUCCESS, {
+        type: 'profilePhotoLoader',
+        flag: false,
+      }),
+    );
+  } else {
+    yield put(
+      yield call(failure, userConstants.REMOVE_PROFILE_PICTURE_FAILURE, error),
+    );
+  }
+}
+
+export function* removeUserProfilePictureWatcherSaga() {
+  yield takeEvery(
+    userConstants.REMOVE_PROFILE_PICTURE_REQUEST,
+    removeUserProfilePictureSaga,
+  );
+}
+
+const getCurrentUserService = async () => {
+  try {
+    const response = await api.get('/current-user');
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* getCurrentUserSaga() {
+  const { response, error } = yield call(getCurrentUserService);
+  if (response) {
+    yield put(
+      yield call(success, userConstants.GET_CURRENT_USER_SUCCESS, response),
+    );
+  } else {
+    yield put(
+      yield call(failure, userConstants.GET_CURRENT_USER_FAILURE, error),
+    );
+    yield delay(3000);
+    getCurrentUserSaga();
+  }
+}
+
+export function* getCurrentUserWatcherSaga() {
+  yield takeEvery(userConstants.GET_CURRENT_USER_REQUEST, getCurrentUserSaga);
+}
+
+const saveProfileService = async (formData) => {
+  try {
+    const response = await api.post('/save-profile', formData);
+    return { response: response.data };
+  } catch (error) {
+    return { error: error.response.data};
+  }
+};
+
+function* saveProfileSaga(action) {
+  const { response, error } = yield call(saveProfileService, action.payload);
+  if (response) {
+    yield put(
+      yield call(success, userConstants.GET_CURRENT_USER_SUCCESS, response),
+    );
+  } else {
+    yield put(yield call(failure, userConstants.SAVE_PROFILE_FAILURE, error));
+    toast.warning(error.message);
+  }
+}
+
+export function* saveProfileWatcherSaga() {
+  yield takeEvery(userConstants.SAVE_PROFILE_REQUEST, saveProfileSaga);
 }
