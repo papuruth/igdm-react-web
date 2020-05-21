@@ -9,7 +9,6 @@ const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const multer  = require('multer');
 const logger = require('morgan');
 const routes = require('./routes/index');
 const instagram = require('./controllers/instagram');
@@ -27,7 +26,6 @@ function expressServer() {
   app.use(logger('dev'));
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-  app.use(multer().array());
   app.use(cors());
   app.enable('trust proxy');
   app.use(cookieParser());

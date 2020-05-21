@@ -271,7 +271,6 @@ class Message extends Component {
     }
 
     function renderPost(post, _type, _msgId) {
-      console.log(post);
       const postDom = dom('<div class="center"></div>');
       if (post.video_versions) {
         postDom.appendChild(
@@ -520,7 +519,6 @@ class Message extends Component {
     }
 
     function renderMessageAsStoryShare(msg, _type, msgId) {
-      console.log(msg, _type, msgId);
       const { story_share } = msg;
       const {
         text, reel_type, media, title, message,

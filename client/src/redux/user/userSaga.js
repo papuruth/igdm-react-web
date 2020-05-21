@@ -157,7 +157,6 @@ const userAuthStartCheckpointService = async () => {
 
 function* userAuthStartCheckpointSaga() {
   const { response, error } = yield call(userAuthStartCheckpointService);
-  console.log(response, error);
   if (response && response.type === 'authResponse') {
     yield put(
       yield call(
@@ -424,10 +423,10 @@ export function* getCurrentUserWatcherSaga() {
 
 const saveProfileService = async (formData) => {
   try {
-    const response = await api.post('/save-profile', formData);
+    const response = await api.post('/save-profile', { formData });
     return { response: response.data };
   } catch (error) {
-    return { error: error.response.data};
+    return { error: error.response.data };
   }
 };
 

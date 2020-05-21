@@ -476,7 +476,7 @@ button:focus {
 
 .viewer {
   position: absolute;
-  top: 0;
+  top: 65px;
   width: 100%;
   overflow-y: auto;
   bottom: 0;
@@ -650,7 +650,7 @@ button:focus {
 
 .app {
   position: fixed !important;
-  top: 0;
+  top: 65px;
   bottom: 0;
   right: 0;
   left: 0;

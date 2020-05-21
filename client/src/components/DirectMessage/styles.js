@@ -3,6 +3,7 @@ import { css } from '@emotion/core';
 
 export const StyledContainer = styled.div`
   align-items: center;
+  margin-top: 100px;
   display: flex;
   justify-content: center;
 `;

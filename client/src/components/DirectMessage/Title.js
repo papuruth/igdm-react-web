@@ -91,7 +91,6 @@ class Title extends Component {
 
   componentDidMount() {
     const { chat_ } = this.props;
-    console.log(chat_);
     const { muted } = chat_;
     const isUserBlocked = chat_.users
       ? chat_.users[0].friendship_status.blocking

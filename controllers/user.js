@@ -148,7 +148,9 @@ exports.getFullUserInfo = async (req, res) => {
     const userInfo = await instagram.getFullUserInfo(userId);
     const friendship = await instagram.getFriendShipInfo(userId);
     const highlights = await instagram.getHighlights(userId);
-    const suggestedUser = userInfo.has_chaining ? await instagram.getsuggestedUser(userId) : [];
+    const suggestedUser = userInfo.has_chaining
+      ? await instagram.getsuggestedUser(userId)
+      : [];
     res.status(200).send({
       userInfo,
       friendship,
@@ -202,15 +204,16 @@ exports.getCurrentUser = async (req, res) => {
   }
 };
 
-exports.saveProfile = async(req, res) => {
+exports.saveProfile = async (req, res) => {
   try {
-    const formData = req.body;
+    const { formData } = req.body;
     const response = await instagram.saveProfile(formData);
     res.status(200).send(response);
   } catch (error) {
     res.status(400).send({
       status: 'fail',
-      message: "You can't change your name right now because you've changed it twice within 14 days"
+      message:
+        "You can't change your name right now because you've changed it twice within 14 days",
     });
   }
-}
+};

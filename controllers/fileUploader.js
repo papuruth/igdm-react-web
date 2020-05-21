@@ -38,9 +38,8 @@ exports.fileUploader = async (req, res) => {
       if (filePathJPG) {
         sharp(filePath)
           .jpeg()
-          .toFile(filePathJPG, async (err_1, info) => {
+          .toFile(filePathJPG, async (err_1) => {
             if (!err_1) {
-              console.log(info);
               response = await instagram.uploadFile(
                 filePathJPG,
                 recepients,
@@ -94,7 +93,6 @@ exports.sendAudio = async (req, res) => {
     if (err) {
       return res.status(500).json(err);
     }
-    console.log(req.file, req.body);
     if (req.file) {
       const filePath = req.file.path;
       const { recepient } = req.body;

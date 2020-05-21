@@ -125,7 +125,6 @@ class Profile extends React.Component {
   };
 
   handleShowHideUserSuggestion = (value) => {
-    console.log(value);
     this.setState((state) => {
       return {
         showPrivate: value !== state.showPrivate ? value : state.showPrivate,

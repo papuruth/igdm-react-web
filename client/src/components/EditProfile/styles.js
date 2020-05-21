@@ -127,8 +127,6 @@ export const DrawerList = styled.ul`
 
 export const ListItem = styled.li``;
 export const ListItemTextLink = css`
-  border-left-color: #262626;
-  border-left: 2px solid transparent;
   display: block;
   font-size: 16px;
   height: 100%;
@@ -533,7 +531,7 @@ export const SubmitFormButton = styled.button`
   user-select: none;
   width: auto;
   &:disabled {
-    background-color: rgba(0,149,246,.3);
+    background-color: rgba(0, 149, 246, 0.3);
     opacity: 1;
   }
 `;
@@ -565,4 +563,83 @@ export const AccountDisableButton = styled.button`
   @media (min-width: 736px) {
     margin-left: 105px;
   }
+`;
+
+export const ProfilePhotoLoaderDiv = styled.div`
+  position: absolute;
+  top: -6px;
+  background: #00000047;
+  left: -1px;
+  width: 100%;
+  height: 100%;
+`;
+
+export const genderRootStyle = css`
+  -webkit-box-align: stretch;
+  -webkit-align-items: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+  border: 0 solid #000;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  position: relative;
+`;
+
+export const GenderChooseSubmitButton = styled(commonDiv)`
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  padding-top: 16px;
+  flex: 0 0 auto;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-box-align: stretch;
+  -webkit-align-items: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+  -webkit-align-content: stretch;
+  -ms-flex-line-pack: stretch;
+  align-content: stretch;
+`;
+
+export const genderSubmitCss = css`
+  border: 1px solid transparent;
+  background-color: #0095f6;
+  padding: 12px 18px;
+  border-radius: 4px;
+  color: #fff;
+  position: relative;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  font-weight: 600;
+  text-align: center;
+  text-transform: inherit;
+  text-overflow: ellipsis;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: auto;
 `;

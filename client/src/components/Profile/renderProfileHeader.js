@@ -2,7 +2,11 @@
 /** @jsx jsx */
 import { ReactComponent as FollowedFriends } from '@/assets/images/followed.svg';
 import { loaderAction } from '@/redux/Loader/loaderAction';
-import { removeUserProfilePictureAction, updateUserProfilePictureAction, userLogout } from '@/redux/user/userAction';
+import {
+  removeUserProfilePictureAction,
+  updateUserProfilePictureAction,
+  userLogout,
+} from '@/redux/user/userAction';
 import { formatNumber } from '@/utils/numberFormat';
 import { jsx } from '@emotion/core';
 import { blue } from '@material-ui/core/colors';
@@ -17,7 +21,38 @@ import { useState } from 'react';
 import { FadeLoader } from 'react-spinners';
 import './profile.component.css';
 import { Link } from 'react-router-dom';
-import { accountDetaildFollowDownBtnWrapper, accountDetailsConfigWrapper, accountDetailsEditProfile, accountDetailsEditProfileBtn, accountDetailsFollowBtnContent, accountDetailsFollowBtnWrapper, accountDetailsFollowDownBtnContent, accountDetailsFollowedByContent, accountDetailsFollowedByWrapper, accountDetailsFollowedUser, accountDetailsFollowingListWrapper, accountDetailsFollowWrapper, accountDetailsInfoName, accountDetailsInfoWrapper, accountDetailsListContent, accountDetailsListContentChild, accountDetailsListContentChildSpan, accountDetailsSettingIconContent, accountDetailsSettingIconWrapper, accountDetailsUsername, accountDetailsVerified, accountDetailsWrapper, accountProfileContent, accountProfileContent1, accountProfileContentBtn, accountProfileHeader, accountProfileImage, accountProfilePicWrapper, ProfilePhotoLoaderDiv, profilePicInput } from './styles';
+import {
+  accountDetaildFollowDownBtnWrapper,
+  accountDetailsConfigWrapper,
+  accountDetailsEditProfile,
+  accountDetailsEditProfileBtn,
+  accountDetailsFollowBtnContent,
+  accountDetailsFollowBtnWrapper,
+  accountDetailsFollowDownBtnContent,
+  accountDetailsFollowedByContent,
+  accountDetailsFollowedByWrapper,
+  accountDetailsFollowedUser,
+  accountDetailsFollowingListWrapper,
+  accountDetailsFollowWrapper,
+  accountDetailsInfoName,
+  accountDetailsInfoWrapper,
+  accountDetailsListContent,
+  accountDetailsListContentChild,
+  accountDetailsListContentChildSpan,
+  accountDetailsSettingIconContent,
+  accountDetailsSettingIconWrapper,
+  accountDetailsUsername,
+  accountDetailsVerified,
+  accountDetailsWrapper,
+  accountProfileContent,
+  accountProfileContent1,
+  accountProfileContentBtn,
+  accountProfileHeader,
+  accountProfileImage,
+  accountProfilePicWrapper,
+  ProfilePhotoLoaderDiv,
+  profilePicInput,
+} from './styles';
 
 const useStyles = makeStyles((_theme) => ({
   avatar: {
@@ -164,13 +199,12 @@ export const RenderProfileHeader = ({
             <button
               css={accountProfileContentBtn}
               title={
-                has_anonymous_profile_picture
+                pk === user.pk && has_anonymous_profile_picture
                   ? 'Add a profile photo'
-                  : 'Change Profile Photo'
+                  : pk === user.pk && 'Change Profile Photo'
               }
               type="button"
-              onClick={openProfileChanger}
-            >
+              onClick={pk === user.pk && openProfileChanger}>
               <img
                 alt="Change Profile Pic"
                 css={accountProfileImage}
@@ -188,8 +222,7 @@ export const RenderProfileHeader = ({
               classes={{
                 paper: classes.txtPosition,
               }}
-              open={showProfileChangeDialog}
-            >
+              open={showProfileChangeDialog}>
               <DialogTitle id="simple-dialog-title">
                 Change Profile Photo
               </DialogTitle>
@@ -198,8 +231,7 @@ export const RenderProfileHeader = ({
                   button
                   onClick={handlePhotoSelect}
                   key="Upload Photo"
-                  className={classes.listTxtBorder}
-                >
+                  className={classes.listTxtBorder}>
                   <ListItemText
                     primary="Upload Photo"
                     classes={{
@@ -211,8 +243,7 @@ export const RenderProfileHeader = ({
                   button
                   onClick={handleRemovePhoto}
                   key="Remove Current Photo"
-                  className={classes.listTxtBorder}
-                >
+                  className={classes.listTxtBorder}>
                   <ListItemText
                     primary="Remove Current Photo"
                     classes={{
@@ -224,8 +255,7 @@ export const RenderProfileHeader = ({
                   autoFocus
                   button
                   onClick={closeProfileChanger}
-                  className={classes.listTxtBorder}
-                >
+                  className={classes.listTxtBorder}>
                   <ListItemText
                     primary="Cancel"
                     classes={{
@@ -239,8 +269,7 @@ export const RenderProfileHeader = ({
               <form
                 encType="multipart/form-data"
                 method="POST"
-                role="presentation"
-              >
+                role="presentation">
                 <input
                   ref={(uploadInput) => {
                     uploadInputRef = uploadInput;
@@ -288,8 +317,7 @@ export const RenderProfileHeader = ({
               <button
                 css={accountDetailsEditProfileBtn}
                 type="button"
-                onClick={showHidePrivateArea}
-              >
+                onClick={showHidePrivateArea}>
                 <ArrowDropDown />
               </button>
             </span>
@@ -306,8 +334,7 @@ export const RenderProfileHeader = ({
                   <button
                     css={accountDetailsFollowDownBtnContent}
                     type="button"
-                    onClick={showHidePrivateArea}
-                  >
+                    onClick={showHidePrivateArea}>
                     <ArrowDropDown />
                   </button>
                 </span>
@@ -319,8 +346,7 @@ export const RenderProfileHeader = ({
               <button
                 css={accountDetailsSettingIconContent}
                 type="button"
-                onClick={showSettingChanger}
-              >
+                onClick={showSettingChanger}>
                 <Settings />
               </button>
             )}
@@ -335,8 +361,7 @@ export const RenderProfileHeader = ({
               classes={{
                 paper: classes.txtPosition,
               }}
-              open={showSettingChangeDialog}
-            >
+              open={showSettingChangeDialog}>
               <List>
                 <ListItem button onClick={handleLogout} key="Logout">
                   <ListItemText
@@ -350,8 +375,7 @@ export const RenderProfileHeader = ({
                   autoFocus
                   button
                   onClick={closeSettingChanger}
-                  className={classes.listTxtBorder}
-                >
+                  className={classes.listTxtBorder}>
                   <ListItemText
                     primary="Cancel"
                     classes={{
@@ -368,32 +392,27 @@ export const RenderProfileHeader = ({
             <span css={accountDetailsListContentChild}>
               <span css={accountDetailsListContentChildSpan}>
                 {formatNumber(media_count)}
-              </span>
-              {' '}
+              </span>{' '}
               posts
             </span>
           </li>
           <li css={accountDetailsListContent}>
             <a
               css={accountDetailsListContentChild}
-              href={`/${username}/followers/`}
-            >
+              href={`/${username}/followers/`}>
               <span css={accountDetailsListContentChildSpan} title="137">
                 {formatNumber(follower_count)}
-              </span>
-              {' '}
+              </span>{' '}
               followers
             </a>
           </li>
           <li css={accountDetailsListContent}>
             <a
               css={accountDetailsListContentChild}
-              href={`/${username}/following/`}
-            >
+              href={`/${username}/following/`}>
               <span css={accountDetailsListContentChildSpan}>
                 {formatNumber(following_count)}
-              </span>
-              {' '}
+              </span>{' '}
               following
             </a>
           </li>
@@ -408,19 +427,13 @@ export const RenderProfileHeader = ({
           {mutualFollower.length > 0 && (
             <a
               css={accountDetailsFollowedByWrapper}
-              href={`${username}/followers/mutualOnly`}
-            >
+              href={`${username}/followers/mutualOnly`}>
               <span css={accountDetailsFollowedByContent}>
-                Followed by
-                {' '}
+                Followed by{' '}
                 <span css={accountDetailsFollowedUser}>
                   {mutualFollower.join(', ')}
                 </span>
-                {' +'} 
-                {' '}
-                {moreFollower}
-                {' '}
-                others.
+                {' +'} {moreFollower} others.
               </span>
             </a>
           )}

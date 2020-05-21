@@ -102,10 +102,8 @@ class Timeline extends React.Component {
 
   componentDidMount() {
     const { user, greetingsFlag, dispatch } = this.props;
-    console.log(this.props);
     setTimeout(() => {
       if (greetingsFlag) {
-        console.log('Hello')
         Toast.info(
           `Hello, ${
             user.full_name || user.username
@@ -184,7 +182,6 @@ class Timeline extends React.Component {
   handleStateChange = (state, prevState) => {
     const { ended } = state;
     if (ended !== prevState.ended) {
-      console.log(ended);
       this.player.play();
     }
   };

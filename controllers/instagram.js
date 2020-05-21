@@ -165,7 +165,6 @@ exports.getOlderMessages = function (thread, chatId) {
       feed.items().then((directChats) => {
         const thread = directChats.find((chat) => chat.thread_id === chatId);
         threadFeed = igClient.feed.directThread(thread);
-        // console.log(threadFeed.isMoreAvailable());
         getOlderMessages(thread, resolve);
       });
     } else {
@@ -449,7 +448,6 @@ exports.test = async (req, res) => {
       biography,
       phone_number,
     } = req.body;
-    console.log(username);
     const response = await igClient.account.editProfile({
       username,
       first_name,

@@ -403,7 +403,7 @@ class DirectMessage extends React.Component {
               alt={user.username}
             />
             <div
-              className="dropdown-menu active"
+              className="dropdown-menu"
               onMouseLeave={this.hideProfile}
               id="profiledropdown"
             >
