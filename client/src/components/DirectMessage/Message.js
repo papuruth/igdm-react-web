@@ -9,8 +9,8 @@ import React, { Component } from 'react';
 import './carousel';
 import { Avatar } from '@material-ui/core';
 import * as moment from 'moment';
-import outlineHeart from '@/assets/images/outline-heart.svg';
-import filledHeart from '@/assets/images/filled-heart.svg';
+import {ReactComponent as Like} from '@/assets/images/Like.svg';
+import {ReactComponent as Unlike} from '@/assets/images/Unlike.svg';
 import likeHeart from '@/assets/images/heart.svg';
 import {
   dom,
@@ -92,7 +92,7 @@ class Message extends Component {
             if (like.sender_id === chat_.users[0].pk) {
               return (
                 <React.Fragment key={reactions.likes[0].timestamp}>
-                  <img src={outlineHeart} alt="reseiver" />
+                  <Like />
                   <img
                     src={chat_.users[0].profile_pic_url}
                     alt={chat_.users[0].username}
@@ -103,7 +103,7 @@ class Message extends Component {
             }
             return (
               <span key={reactions.likes[0].timestamp}>
-                <img src={filledHeart} alt="sender" />
+                <Unlike />
                 <img
                   src={chat_.inviter.profile_pic_url}
                   alt={chat_.inviter.username}

@@ -437,26 +437,44 @@ exports.saveProfile = (formData) => {
   });
 };
 
+exports.likeTimelineMedia = (mediaId, moduleInfo) => {
+  return new Promise((resolve, reject) => {
+    igClient.media.like({ mediaId, moduleInfo }).then(resolve).catch(reject);
+  });
+};
+
+exports.unlikeTimelineMedia = (mediaId, moduleInfo) => {
+  return new Promise((resolve, reject) => {
+    igClient.media.unlike({ mediaId, moduleInfo }).then(resolve).catch(reject);
+  });
+};
+
+exports.postComment = (mediaId, comment) => {
+  return new Promise((resolve, reject) => {
+    igClient.media
+      .comment({ mediaId, text: comment })
+      .then(resolve)
+      .catch(reject);
+  });
+};
+
+exports.userReel = () => {
+  return new Promise((resolve, reject) => {
+    igClient.feed.reelsTray().items().then(resolve).catch(reject);
+  });
+};
+
+const discoverFeed = igClient.feed.discover();
+exports.sendSuggestedUser = () => {
+  return new Promise((resolve, reject) => {
+    discoverFeed.items().then(resolve).catch(reject);
+  })
+}
+
 exports.test = async (req, res) => {
   try {
-    const {
-      username,
-      first_name,
-      email,
-      external_url,
-      gender,
-      biography,
-      phone_number,
-    } = req.body;
-    const response = await igClient.account.editProfile({
-      username,
-      first_name,
-      email,
-      external_url,
-      gender,
-      biography,
-      phone_number,
-    });
+    // const { userId, moduleInfo } = req.body;
+    const response = await discoverFeed.items();
     res.status(200).send(response);
   } catch (error) {
     console.log(error);

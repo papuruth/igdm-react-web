@@ -2,6 +2,7 @@
   "name": "server",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "nodemon node server.js",
     "client": "cd client && yarn start",

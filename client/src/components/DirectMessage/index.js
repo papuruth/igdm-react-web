@@ -13,14 +13,15 @@ import instaIcon from '@/assets/images/icon.png';
 import ChatBox from '@/containers/ChatBox';
 import { fetchChatListAction, fileUploadAction, getSingleChatAction, getUnfollowersAction, searchUser, sendAudioAction, sendMessageAction, showLoaderAction } from '@/redux/chats/chatsAction';
 import Toast from '@/utils/toast';
-import { Avatar, Button } from '@material-ui/core';
-import { AccountCircle, CameraAlt, Close, InsertEmoticon, Mic, Pause, PlayArrow, Send, Stop } from '@material-ui/icons';
+import { Button } from '@material-ui/core';
+import { CameraAlt, Close, InsertEmoticon, Mic, Pause, PlayArrow, Send, Stop } from '@material-ui/icons';
 import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete';
 import { emojiIndex, Picker } from 'emoji-mart';
 import 'emoji-mart/css/emoji-mart.css';
 import React from 'react';
 import AudioAnalyser from 'react-audio-analyser';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Helmet } from 'react-helmet';
 import { isActive, markAsRead, scrollToChatBottom, setActive } from './helperFunctions';
 import { renderMessage, renderUnfollowers } from './rendererFunction';
 import RenderSearchResult from './renderSearchResult';
@@ -78,8 +79,8 @@ class DirectMessage extends React.Component {
     }
     if (olderMessages) {
       if (
-        Object.keys(state.singleChat).length
-        && state.singleChat.items.length !== olderMessages.items.length
+        Object.keys(state.singleChat).length &&
+        state.singleChat.items.length !== olderMessages.items.length
       ) {
         const doc = document.querySelector('.messages');
         doc.scrollBy(0, 200);
@@ -135,8 +136,8 @@ class DirectMessage extends React.Component {
       dispatch(showLoaderAction(false, 'imageUploadLoader'));
     }
     if (
-      getSingleChat.thread_id !== prevProps.getSingleChat.thread_id
-      || (getSingleChat.pk !== prevProps.getSingleChat.pk && chatLoader)
+      getSingleChat.thread_id !== prevProps.getSingleChat.thread_id ||
+      (getSingleChat.pk !== prevProps.getSingleChat.pk && chatLoader)
     ) {
       dispatch(showLoaderAction(false, 'chatLoader'));
     }
@@ -184,9 +185,9 @@ class DirectMessage extends React.Component {
 
   handleClickOutside = (event) => {
     if (
-      this.emojiRef.previousSibling !== event.target.parentElement
-      && !this.emojiRef.contains(event.target)
-      && this.emojiToggleBtnRef !== event.target.parentElement
+      this.emojiRef.previousSibling !== event.target.parentElement &&
+      !this.emojiRef.contains(event.target) &&
+      this.emojiToggleBtnRef !== event.target.parentElement
     ) {
       this.emojiRef.classList.add('hide');
     }
@@ -278,7 +279,8 @@ class DirectMessage extends React.Component {
   };
 
   showProfile = () => {
-    document.getElementById('profiledropdown').classList = 'dropdown-menu active';
+    document.getElementById('profiledropdown').classList =
+      'dropdown-menu active';
   };
 
   showEmojiPane = (event) => {
@@ -352,7 +354,6 @@ class DirectMessage extends React.Component {
     const {
       renderChatFlag,
       chatsList,
-      user,
       singleChat,
       audioSrc,
       status,
@@ -386,55 +387,20 @@ class DirectMessage extends React.Component {
         });
       },
     };
-    const isBlocked = Object.keys(singleChat).length && singleChat.users
-      ? singleChat.users[0].friendship_status.blocking
-      : false;
+    const isBlocked =
+      Object.keys(singleChat).length && singleChat.users
+        ? singleChat.users[0].friendship_status.blocking
+        : false;
     if (isBlocked) {
       document.removeEventListener('mousedown', this.handleClickOutside);
     }
     return (
       <StyledContainer>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>Direct • IGDM</title>
+        </Helmet>
         <div className="container_fluid app">
-          <div className="header d-flex p-3">
-            <Avatar
-              onMouseEnter={this.showProfile}
-              className="settings"
-              src={user ? user.profile_pic_url : <AccountCircle />}
-              alt={user.username}
-            />
-            <div
-              className="dropdown-menu"
-              onMouseLeave={this.hideProfile}
-              id="profiledropdown"
-            >
-              <div
-                className="dropdown-item"
-                id="seen-flagger"
-                title="You'd know when recipients read your message, but they won't know when you read theirs"
-              >
-                Don&apos;t send &apos;Seen&apos; receipts
-              </div>
-              <div
-                className="dropdown-item"
-                id="unfollowers"
-                role="button"
-                tabIndex={0}
-                onClick={this.handleNonFollowers}
-              >
-                Users not following back
-              </div>
-            </div>
-            <div className="search-header col-md-auto">
-              <input
-                className="form-control"
-                type="text"
-                onChange={this.handleUserInput}
-                value={searchText}
-                name="searchText"
-                placeholder="Search Instagram users"
-              />
-            </div>
-          </div>
           <div className="appBody">
             <div className="chat-list col-4">
               <div className="listStrapper row">
@@ -454,15 +420,15 @@ class DirectMessage extends React.Component {
                       />
                     )
                   )}
-                  {(searchText || !chatsList.length)
-                    && (!searchUserResult.length || searchUserLoader) && (
+                  {(searchText || !chatsList.length) &&
+                    (!searchUserResult.length || searchUserLoader) && (
                       <ClipLoader
                         css={renderUserListLoader}
                         size={70}
                         color="#123abc"
                         loading
                       />
-                  )}
+                    )}
                 </ul>
               </div>
             </div>
@@ -485,11 +451,7 @@ class DirectMessage extends React.Component {
               ) : (
                 <div className="messages row p-3 pt-5">
                   <div className="center cover">
-                    <img
-                      src={instaIcon}
-                      width="300px"
-                      alt=""
-                    />
+                    <img src={instaIcon} width="300px" alt="" />
                     <p className="italic">Search and select a chat to start.</p>
                   </div>
                 </div>
@@ -542,8 +504,7 @@ class DirectMessage extends React.Component {
                             className="send-audio"
                             type="submit"
                             onClick={this.toggleRecording}
-                            disabled={!renderChatFlag}
-                          >
+                            disabled={!renderChatFlag}>
                             <Send title="Send audio" onClick={this.sendAudio} />
                           </button>
                         </div>
@@ -579,8 +540,7 @@ class DirectMessage extends React.Component {
                       className="record-audio"
                       type="submit"
                       onClick={this.toggleRecording}
-                      disabled={!renderChatFlag}
-                    >
+                      disabled={!renderChatFlag}>
                       <Mic title="Record" />
                     </button>
                   ) : (
@@ -588,8 +548,7 @@ class DirectMessage extends React.Component {
                       className="record-audio"
                       type="submit"
                       onClick={this.toggleRecording}
-                      disabled={!renderChatFlag}
-                    >
+                      disabled={!renderChatFlag}>
                       <Close title="Close Record" />
                     </button>
                   )}
@@ -597,8 +556,7 @@ class DirectMessage extends React.Component {
                     className="send-attachment"
                     type="submit"
                     onClick={this.sendFile}
-                    disabled={!renderChatFlag}
-                  >
+                    disabled={!renderChatFlag}>
                     <CameraAlt />
                   </button>
                   <input
@@ -618,16 +576,14 @@ class DirectMessage extends React.Component {
                       this.emojiToggleBtnRef = emojiToggleBtn;
                     }}
                     onClick={this.showEmojiPane}
-                    disabled={!renderChatFlag}
-                  >
+                    disabled={!renderChatFlag}>
                     <InsertEmoticon />
                   </button>
                   <div
                     className="emojis hide"
                     ref={(emoji) => {
                       this.emojiRef = emoji;
-                    }}
-                  >
+                    }}>
                     <div className="emojis-body">
                       <Picker
                         set="facebook"
@@ -643,11 +599,7 @@ class DirectMessage extends React.Component {
               {isBlocked && (
                 <div className="blockedWrapper row p-3">
                   <div className="blockedContent">
-                    You blocked
-                    {' '}
-                    {singleChat.thread_title}
-                    .
-                    {' '}
+                    You blocked {singleChat.thread_title}.{' '}
                     <Button color="primary" onClick={this.deleteChat}>
                       Delete Chat.
                     </Button>
@@ -662,13 +614,8 @@ class DirectMessage extends React.Component {
             className="close"
             onKeyPress={this.closeModalViewer}
             onClick={this.closeModalViewer}
-            type="submit"
-          >
-            <img
-              width="25px"
-              src={closeIcon}
-              alt="close icon"
-            />
+            type="submit">
+            <img width="25px" src={closeIcon} alt="close icon" />
           </button>
           <div className="viewer_content" />
         </div>

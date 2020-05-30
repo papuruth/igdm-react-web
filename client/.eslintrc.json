@@ -7,7 +7,7 @@
   },
   "plugins": ["react", "jsx-a11y", "import"],
   "rules": {
-    "camelcase": "off",
+    "camelcase": 0,
     "global-require": "off",
     "implicit-arrow-linebreak": "off",
     "import/prefer-default-export": "off",

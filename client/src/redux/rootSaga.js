@@ -32,7 +32,14 @@ import {
   getUnfollowersWatcherSaga,
   unfollowUserWatcherSaga,
 } from './chats/chatsSaga';
-import { fetchTimelineWatcherSaga } from './timeline/timelineSaga';
+import {
+  fetchTimelineWatcherSaga,
+  likeTiemlineMediaWatcherSaga,
+  unlikeTiemlineMediaWatcherSaga,
+  mediaCommentWatcherSaga,
+  fetchUserReelWatcherSaga,
+  fetchSuggestedUserWatcherSaga,
+} from './timeline/timelineSaga';
 import { loaderWatcherSaga } from './Loader/loaderSaga';
 
 export default function* rootSaga() {
@@ -68,5 +75,10 @@ export default function* rootSaga() {
     loaderWatcherSaga(),
     getCurrentUserWatcherSaga(),
     saveProfileWatcherSaga(),
+    likeTiemlineMediaWatcherSaga(),
+    unlikeTiemlineMediaWatcherSaga(),
+    mediaCommentWatcherSaga(),
+    fetchUserReelWatcherSaga(),
+    fetchSuggestedUserWatcherSaga(),
   ]);
 }

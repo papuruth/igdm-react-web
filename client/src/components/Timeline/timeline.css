@@ -1,0 +1,9 @@
+.react-multiple-carousel__arrow, .react-multiple-carousel__arrow:hover {
+  background: #fff;
+  min-width: 30px;
+  min-height: 30px;
+}
+
+.react-multiple-carousel__arrow::before {
+  color: #000;
+}

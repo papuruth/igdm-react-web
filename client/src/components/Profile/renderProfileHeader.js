@@ -104,6 +104,8 @@ export const RenderProfileHeader = ({
     full_name,
     is_private,
     is_verified,
+    external_url,
+    category,
     biography,
     profile_context_mutual_follow_ids,
     profile_context_links_with_user_ids,
@@ -191,6 +193,16 @@ export const RenderProfileHeader = ({
     setUserSuggestion(!showUserSuggestion);
   };
 
+  const profileImageTitle = () => {
+    if (pk === user.pk && has_anonymous_profile_picture) {
+      return 'Add a profile photo';
+    }
+    if (pk === user.pk) {
+      return 'Change Profile Photo';
+    }
+    return '';
+  };
+
   return (
     <header css={accountProfileHeader}>
       <div css={accountProfilePicWrapper}>
@@ -198,13 +210,9 @@ export const RenderProfileHeader = ({
           <div css={accountProfileContent1}>
             <button
               css={accountProfileContentBtn}
-              title={
-                pk === user.pk && has_anonymous_profile_picture
-                  ? 'Add a profile photo'
-                  : pk === user.pk && 'Change Profile Photo'
-              }
+              title={profileImageTitle()}
               type="button"
-              onClick={pk === user.pk && openProfileChanger}>
+              onClick={pk === user.pk ? openProfileChanger : () => {}}>
               <img
                 alt="Change Profile Pic"
                 css={accountProfileImage}
@@ -390,7 +398,9 @@ export const RenderProfileHeader = ({
         <ul css={accountDetailsFollowingListWrapper}>
           <li css={accountDetailsListContent}>
             <span css={accountDetailsListContentChild}>
-              <span css={accountDetailsListContentChildSpan}>
+              <span
+                css={accountDetailsListContentChildSpan}
+                title={media_count}>
                 {formatNumber(media_count)}
               </span>{' '}
               posts
@@ -400,7 +410,9 @@ export const RenderProfileHeader = ({
             <a
               css={accountDetailsListContentChild}
               href={`/${username}/followers/`}>
-              <span css={accountDetailsListContentChildSpan} title="137">
+              <span
+                css={accountDetailsListContentChildSpan}
+                title={follower_count}>
                 {formatNumber(follower_count)}
               </span>{' '}
               followers
@@ -410,7 +422,9 @@ export const RenderProfileHeader = ({
             <a
               css={accountDetailsListContentChild}
               href={`/${username}/following/`}>
-              <span css={accountDetailsListContentChildSpan}>
+              <span
+                css={accountDetailsListContentChildSpan}
+                title={following_count}>
                 {formatNumber(following_count)}
               </span>{' '}
               following
@@ -420,10 +434,18 @@ export const RenderProfileHeader = ({
         <div css={accountDetailsInfoWrapper}>
           <h1 css={accountDetailsInfoName}>{full_name}</h1>
           <br />
+          {category && <span>{category}</span>}
           <span>
             {biography &&
               biography.split('\n').map((ele) => <p key={ele}>{ele}</p>)}
           </span>
+          {external_url && (
+            <span>
+              <a href={external_url} target="_blank" rel="noopener noreferrer" css={{color: '#007bff!important;', fontWeight: 600}}>
+                {external_url}
+              </a>
+            </span>
+          )}
           {mutualFollower.length > 0 && (
             <a
               css={accountDetailsFollowedByWrapper}

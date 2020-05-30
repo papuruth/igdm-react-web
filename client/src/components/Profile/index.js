@@ -12,6 +12,7 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import { BookmarkBorderOutlined, GridOn, LiveTv } from '@material-ui/icons';
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { RenderPrivateAccount } from './renderPrivateAccount';
 import { RenderProfileHeader } from './renderProfileHeader';
 import RenderUserFeeds from './renderUserFeeds';
@@ -37,14 +38,12 @@ const TabPanel = (props) => {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       {value === index && (
         <Box
           style={{
             marginTop: '20px',
-          }}
-        >
+          }}>
           {children}
         </Box>
       )}
@@ -147,6 +146,7 @@ class Profile extends React.Component {
       dispatch,
       profilePhotoLoader,
     } = this.props;
+    const { username, full_name } = user;
     const { tab, showPrivate } = this.state;
     const { pk, is_private } = location.state ? userInfo : userInfo || user;
     const privateUser = is_private && pk !== user.pk;
@@ -162,6 +162,10 @@ class Profile extends React.Component {
 
     return (
       <StyledContainer>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>{`${full_name} ${full_name ? `(@${username})` : `${username}`} • Instagram photos and videos`}</title>
+        </Helmet>
         <MainContainer>
           <MainContainerWrapper>
             {Object.keys(userInfo).length > 0 && user && (
@@ -192,8 +196,7 @@ class Profile extends React.Component {
                     onChange={this.handleChange}
                     indicatorColor="primary"
                     textColor="primary"
-                    centered
-                  >
+                    centered>
                     <Tab icon={<GridOn />} label="POSTS" />
                     <Tab icon={<LiveTv />} label="IGTV" />
                     <Tab icon={<BookmarkBorderOutlined />} label="SAVED" />

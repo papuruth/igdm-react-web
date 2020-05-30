@@ -34,5 +34,10 @@ router.post('/update-profile-photo', userController.updateUserProfilePhoto);
 router.post('/remove-profile-photo', userController.removeUserProfilePhoto);
 router.get('/current-user', userController.getCurrentUser)
 router.post('/save-profile', userController.saveProfile)
+router.post('/like-timeline-media', chatController.likeTimelineMedia);
+router.post('/unlike-timeline-media', chatController.unlikeTimelineMedia);
+router.post('/media-comment', chatController.postComment)
+router.get('/user-reel', chatController.userReel);
+router.get('/suggested_user', userController.fetchSuggestedUser)
 router.post('/test', instagram.test);
 module.exports = router;

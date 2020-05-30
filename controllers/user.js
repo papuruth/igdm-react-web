@@ -217,3 +217,14 @@ exports.saveProfile = async (req, res) => {
     });
   }
 };
+
+exports.fetchSuggestedUser = async (req, res) => {
+  try {
+    const response = await instagram.sendSuggestedUser();
+    if (response) {
+      res.status(200).send(response);
+    }
+  } catch (e) {
+    res.status(400).send(e);
+  }
+};

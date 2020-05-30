@@ -2,6 +2,7 @@
   "name": "igdm-react-web",
   "version": "0.0.1",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "start": "craco start",
     "build": "cross-env GENERATE_SOURCEMAP=false craco build",
@@ -58,6 +59,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
     "react-spinners": "^0.8.1",
+    "react-string-replace": "^0.4.4",
     "react-toastify": "^5.5.0",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",

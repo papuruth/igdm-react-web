@@ -144,6 +144,10 @@ export const accountDetailsUsername = css`
   color: rgba(var(--i1d, 38, 38, 38), 1);
   font-weight: 300;
   font-size: 28px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   line-height: 32px;
   margin: -5px 0 -6px;
 `;

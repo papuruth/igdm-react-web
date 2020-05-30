@@ -12,13 +12,14 @@ exports.getChatList = function getChatList(req, res) {
         .then((presenceInfo) => {
           for (const chat in chats) {
             if (
-              chats[chat].users.length === 1
-              && Object.prototype.hasOwnProperty.call(
+              chats[chat].users.length === 1 &&
+              Object.prototype.hasOwnProperty.call(
                 presenceInfo.user_presence,
                 chats[chat].users[0].pk,
               )
             ) {
-              chats[chat].presence = presenceInfo.user_presence[chats[chat].users[0].pk];
+              chats[chat].presence =
+                presenceInfo.user_presence[chats[chat].users[0].pk];
             }
           }
           res.send({
@@ -30,20 +31,20 @@ exports.getChatList = function getChatList(req, res) {
           res.send({
             type: 'chatListError',
             error,
-          }));
+          }),
+        );
     })
     .catch((error) =>
       res.send({
         type: 'chatListError',
         error,
-      }));
+      }),
+    );
 };
 
 exports.sendNewMessage = (req, res) => {
   const { message } = req.body;
-  const {
-    isNewChat, text, users, chatId,
-  } = message;
+  const { isNewChat, text, users, chatId } = message;
   try {
     if (isNewChat) {
       instagram
@@ -247,3 +248,42 @@ exports.timeline = async (req, res) => {
     res.status(400).send(error);
   }
 };
+
+exports.likeTimelineMedia = async (req, res) => {
+  try {
+    const { mediaId, moduleInfo } = req.body;
+    const response = await instagram.likeTimelineMedia(mediaId, moduleInfo);
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send(error.toString());
+  }
+};
+
+exports.unlikeTimelineMedia = async (req, res) => {
+  try {
+    const { mediaId, moduleInfo } = req.body;
+    const response = await instagram.unlikeTimelineMedia(mediaId, moduleInfo);
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+exports.postComment = async (req, res) => {
+  try {
+    const { mediaId, comment } = req.body;
+    const response = await instagram.postComment(mediaId, comment);
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.userReel = async (req, res) => {
+  try {
+    const response = await instagram.userReel();
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+}
