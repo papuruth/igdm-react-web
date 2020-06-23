@@ -284,7 +284,7 @@ class Header extends React.Component {
           <Toolbar>
             <Typography className={classes.title} variant="h6" noWrap>
               <Link to="/" onClick={this.resetTimeline}>
-                IGDM-React
+                Igram
               </Link>
             </Typography>
             <div className={classes.search}>

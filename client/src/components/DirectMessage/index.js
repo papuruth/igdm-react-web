@@ -421,7 +421,7 @@ class DirectMessage extends React.Component {
       <StyledContainer>
         <Helmet>
           <meta charSet="utf-8" />
-          <title>Direct • IGDM</title>
+          <title>Direct • Igram</title>
         </Helmet>
         <div className="container_fluid app">
           <div className="appBody">

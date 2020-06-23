@@ -33,7 +33,7 @@ export default class Home extends React.Component {
       <StyledContainer>
         <Helmet>
           <meta charSet="utf-8" />
-          <title>IGDM | React</title>
+          <title>Igram</title>
         </Helmet>
         <Timeline
           data={timelines}
