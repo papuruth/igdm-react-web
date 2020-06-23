@@ -59,10 +59,11 @@ exports.handleTwoFactor = (req, res) => {
       trustThisDevice,
       verificationMethod,
     )
-    .then(({ pk }) => {
+    .then((user) => {
+      console.log('verify-otp res', user);
       res.send({
         type: 'authResponse',
-        payload: pk,
+        payload: user.pk,
       });
     })
     .catch((error) => {

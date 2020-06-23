@@ -93,7 +93,6 @@ export const StoriesReelContentContainerDiv = styled.div`
   height: 100%;
   width: 100%;
   max-width: 616px;
-  margin-left: 10px;
   justify-content: center;
   background: rgba(var(--d87, 255, 255, 255), 1);
   border: 1px solid #dbdbdb;
@@ -622,7 +621,7 @@ export const UserSuggestionSuggestedUserMainDIV1Canvas = styled.canvas`
   left: -5px;
   width: 42px;
   height: 42px;
-  border: 2px solid #ff6685;
+  border: 1px solid #c7c4c4;
   border-radius: 50%;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
