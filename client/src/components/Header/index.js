@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
+import igramLogo from '@/assets/images/igram.png';
 import { ReactComponent as SharePost } from '@/assets/images/SharePost.svg';
 import {
-  searchUser,
-  showLoaderAction,
-  directInboxRecordsAction,
+  directInboxRecordsAction, searchUser,
+  showLoaderAction
 } from '@/redux/chats/chatsAction';
 import { Avatar } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
@@ -20,7 +20,7 @@ import {
   ExploreOutlined,
   FavoriteBorder,
   Home,
-  Search,
+  Search
 } from '@material-ui/icons';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
@@ -198,10 +198,7 @@ class Header extends React.Component {
       user,
       directInboxRecords,
     } = this.props;
-    const {
-      inbox,
-      pending_requests_total,
-    } = directInboxRecords;
+    const { inbox, pending_requests_total } = directInboxRecords;
     const { profile_pic_url, username } = user;
     const { mobileMoreAnchorEl, searchText } = this.state;
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -284,7 +281,12 @@ class Header extends React.Component {
           <Toolbar>
             <Typography className={classes.title} variant="h6" noWrap>
               <Link to="/" onClick={this.resetTimeline}>
-                Igram
+                <img
+                  src={igramLogo}
+                  alt="web-logo"
+                  width="65%"
+                  height="45px"
+                />
               </Link>
             </Typography>
             <div className={classes.search}>
