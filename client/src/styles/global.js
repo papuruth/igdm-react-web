@@ -22,7 +22,6 @@ const GlobalStyle = createGlobalStyle`
     -webkit-font-smoothing: antialiased !important;
   }
   body, input, textarea {
-    font-family: 'Ubuntu', sans-serif !important;
   }
   a, button {
     outline: none;

@@ -458,26 +458,65 @@ exports.postComment = (mediaId, comment) => {
   });
 };
 
-exports.userReel = () => {
-  return new Promise((resolve, reject) => {
-    igClient.feed.reelsTray().items().then(resolve).catch(reject);
-  });
+exports.userReel = async () => {
+  try {
+    const userTray = await igClient.feed.reelsTray().items();
+    const userId = userTray.map((item) => item.user.pk);
+    const response = userId.map(async (id) => {
+      const reelsFeed = igClient.feed.reelsMedia({
+        // working with reels media feed (stories feed)
+        userIds: [id], // you can specify multiple user id's, "pk" param is user id
+      });
+      const { reels } = await reelsFeed.request();
+      return reels[id];
+    });
+    const userReelsMedia = await Promise.all(response);
+    return userReelsMedia.map((story, index) => {
+      story.ranked_position = userTray[index].ranked_position;
+      return story;
+    });
+  } catch (error) {
+    return error;
+  }
 };
 
 const discoverFeed = igClient.feed.discover();
 exports.sendSuggestedUser = () => {
   return new Promise((resolve, reject) => {
     discoverFeed.items().then(resolve).catch(reject);
-  })
-}
+  });
+};
+
+exports.fetchUserStories = (userId) => {
+  return new Promise((resolve, reject) => {
+    igClient.feed.userStory(userId).items().then(resolve).catch(reject);
+  });
+};
+
+exports.markAsSeenStory = (story) => {
+  return new Promise((resolve, reject) => {
+    igClient.story.seen([story]).then(resolve).catch(reject);
+  });
+};
+
+exports.directInboxRecords = () => {
+  return new Promise((resolve, reject) =>
+    igClient.feed.directInbox().request().then(resolve).catch(reject),
+  );
+};
+
+exports.pendingInboxRecords = () => {
+  return new Promise((resolve, reject) =>
+    igClient.feed.directPending().items().then(resolve).catch(reject),
+  );
+};
 
 exports.test = async (req, res) => {
   try {
-    // const { userId, moduleInfo } = req.body;
-    const response = await discoverFeed.items();
+    // const { userId } = req.body;
+    const response = await igClient.feed.directPending().request();
     res.status(200).send(response);
   } catch (error) {
-    console.log(error);
     res.status(400).send(error.message);
   }
 };

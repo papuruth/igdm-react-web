@@ -10,6 +10,7 @@ const mapStateToProps = (state) => {
     profilePhotoUpdated,
     profilePhotoRemoved,
   } = state.userReducer;
+  const { unfollowers } = state.chatReducer;
   const {
     userFeeds,
     userFeedError,
@@ -35,6 +36,7 @@ const mapStateToProps = (state) => {
     profilePhotoUpdated,
     profilePhotoRemoved,
     profilePhotoLoader,
+    unfollowers,
   };
 };
 

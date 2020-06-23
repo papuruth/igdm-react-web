@@ -145,6 +145,7 @@ class Profile extends React.Component {
       hasMore,
       dispatch,
       profilePhotoLoader,
+      unfollowers,
     } = this.props;
     const { username, full_name } = user;
     const { tab, showPrivate } = this.state;
@@ -174,6 +175,7 @@ class Profile extends React.Component {
                   userInfo={userInfo}
                   location={location}
                   user={user}
+                  unfollowers={unfollowers}
                   profilePhotoLoader={profilePhotoLoader}
                   dispatch={dispatch}
                   friendship={friendship}

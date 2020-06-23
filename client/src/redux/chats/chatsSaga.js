@@ -13,6 +13,7 @@ import {
 import Axios from 'axios';
 import { chatsConstants } from './chatsConstants';
 import { userConstants } from '../user/userConstants';
+import { loaderConstants } from '../Loader/loaderConstants';
 
 let chatListTimeoutObj;
 let messagesThread;
@@ -173,7 +174,8 @@ function* getOlderMessageSaga(action) {
   if (data && data.type === 'oldMessageResponse') {
     messagesThread = data.payload.messagesThread;
     data.payload.messages.map((item) =>
-      data.payload.messagesThread.items.push(item));
+      data.payload.messagesThread.items.push(item),
+    );
     yield put(
       yield call(
         success,
@@ -495,10 +497,91 @@ function* unfollowUserSaga(action) {
     );
   } else {
     yield put(yield call(failure, chatsConstants.UNFOLLOW_USER_FAILURE, error));
+    unfollowUserSaga(action);
   }
-  unfollowUserSaga(action);
 }
 
 export function* unfollowUserWatcherSaga() {
   yield takeEvery(chatsConstants.UNFOLLOW_USER_REQUEST, unfollowUserSaga);
+}
+
+/**
+ * @description Saga for fetching direct inbox count
+ * @type Redux saga generator function
+ */
+
+const directInboxRecordsService = async () => {
+  try {
+    const response = await api.get('/direct-records');
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* directInboxRecordsSaga() {
+  const { response, error } = yield call(directInboxRecordsService);
+  if (response) {
+    yield put(
+      yield call(
+        success,
+        chatsConstants.FETCH_DIRECT_INBOX_RECORDS_SUCCESS,
+        response,
+      ),
+    );
+  } else {
+    yield put(
+      yield call(
+        failure,
+        chatsConstants.FETCH_DIRECT_INBOX_RECORDS_FAILURE,
+        error,
+      ),
+    );
+    directInboxRecordsSaga();
+  }
+}
+
+export function* directInboxRecordsWatcherSaga() {
+  yield takeEvery(
+    chatsConstants.FETCH_DIRECT_INBOX_RECORDS_REQUEST,
+    directInboxRecordsSaga,
+  );
+}
+
+/**
+ * @description Saga for fetching pending requests
+ * @type Redux saga generator function
+ */
+
+const pendingInboxRequestsService = async () => {
+  try {
+    const response = await api.get('/pending-records');
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* pendingInboxRequestsSaga() {
+  const { response, error } = yield call(pendingInboxRequestsService);
+  if (response) {
+    yield put(
+      yield call(success, chatsConstants.FETCH_PENDING_INBOX_SUCCESS, response),
+    );
+    yield put(
+      yield call(success, loaderConstants.SHOW_LOADER_SUCCESS, false),
+    );
+  } else {
+    yield put(
+      yield call(failure, chatsConstants.FETCH_PENDING_INBOX_FAILURE, error),
+    );
+    pendingInboxRequestsSaga();
+  }
+}
+
+export function* pendingInboxRequestsWatcherSaga() {
+  yield takeEvery(
+    chatsConstants.FETCH_PENDING_INBOX_REQUEST,
+    pendingInboxRequestsSaga,
+  );
 }

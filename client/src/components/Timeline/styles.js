@@ -93,6 +93,7 @@ export const StoriesReelContentContainerDiv = styled.div`
   height: 100%;
   width: 100%;
   max-width: 616px;
+  margin-left: 10px;
   justify-content: center;
   background: rgba(var(--d87, 255, 255, 255), 1);
   border: 1px solid #dbdbdb;
@@ -148,6 +149,7 @@ export const StoriesReelCarouselItemContentDiv = styled.div`
   -webkit-box-flex: 0;
   -webkit-flex: none;
   -ms-flex: none;
+  position: relative;
   flex: none;
   -webkit-box-pack: center;
   -webkit-justify-content: center;
@@ -157,10 +159,10 @@ export const StoriesReelCarouselItemContentDiv = styled.div`
 
 export const StoriesReelCarouselItemCanvas = styled.canvas`
   position: absolute;
-  top: 0;
-  left: 3px;
+  top: -5px;
+  left: -5px;
   width: 66px;
-  border: 3px solid #ff6685;
+  border: ${props => props.borderColor ? '3px solid #ff6685' : '1px solid #c7c4c4'};
   border-radius: 50%;
   height: 66px;
 `;
@@ -285,6 +287,7 @@ export const UserSuggestionProfileImage = styled.div`
   -webkit-box-flex: 0;
   -webkit-flex: none;
   -ms-flex: none;
+  position: relative;
   flex: none;
   -webkit-box-pack: center;
   -webkit-justify-content: center;
@@ -306,7 +309,7 @@ export const UserSuggestionProfileImageCanvas = styled.canvas`
   -ms-user-select: none;
   user-select: none;
 `;
-export const UserSuggestionProfileImageAnchor = styled.a`
+export const UserSuggestionProfileImageSpan = styled.span`
   width: 56px;
   height: 56px;
   cursor: pointer;
@@ -1001,4 +1004,41 @@ export const IGDMFooterCopyright = styled.span`
   line-height: 13px;
   text-transform: none;
   color: #8e8e8e;
+`;
+
+export const StoriesContainer = styled.div`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  height: 100%;
+  overflow-y: auto;
+  align-items: center;
+  animation-name: fadeIn;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-out;
+  bottom: 0;
+  background: #262626;
+  z-index: 1300;
+`;
+
+export const StoriesContainerCloseButton = styled.button`
+  ${StoriesContainer}, & {
+    background: transparent;
+    color: #fff;
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 10;
+  }
+`;
+
+export const StoriesContainerContent = styled.div`
+  ${StoriesContainer}, & {
+    display: block;
+    margin: 0 auto;
+    position: inherit;
+    top: 100px;
+    left: 40%;
+  }
 `;

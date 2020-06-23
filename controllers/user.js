@@ -228,3 +228,15 @@ exports.fetchSuggestedUser = async (req, res) => {
     res.status(400).send(e);
   }
 };
+
+exports.fetchUserStories = async (req, res) => {
+  try {
+    const {userId} = req.query;
+    const response = await instagram.fetchUserStories(userId);
+    if (response) {
+      res.status(200).send(response);
+    }
+  } catch (e) {
+    res.status(400).send(e);
+  }
+};

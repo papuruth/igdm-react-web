@@ -19,7 +19,6 @@ const mapStateToProps = (state) => {
     imageUploadLoader,
     audioUploadLoader,
     searchUserLoader,
-    unfollowers,
   } = state.chatReducer;
   return {
     user,
@@ -39,7 +38,6 @@ const mapStateToProps = (state) => {
     imageUploadLoader: imageUploadLoader || false,
     audioUploadLoader: audioUploadLoader || false,
     searchUserLoader: searchUserLoader || false,
-    unfollowers,
   };
 };
 

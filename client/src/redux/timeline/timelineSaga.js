@@ -225,3 +225,93 @@ export function* fetchSuggestedUserWatcherSaga() {
     fetchSuggestedUserSaga,
   );
 }
+
+/**
+ * @description Saga for fetching user stories based on user ids
+ * @type Redux saga generator function
+ */
+
+const fetchStoriesItemsService = async (userId) => {
+  try {
+    const response = await api.get('/user-stories', {
+      params: {
+        userId,
+      },
+    });
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* fetchStoriesItemsSaga(action) {
+  const { response, error } = yield call(
+    fetchStoriesItemsService,
+    action.payload,
+  );
+  if (response) {
+    yield put(
+      yield call(
+        success,
+        timelineConstants.FETCH_USER_STORIES_SUCCESS,
+        response,
+      ),
+    );
+  } else {
+    yield put(
+      yield call(failure, timelineConstants.FETCH_USER_STORIES_FAILURE, error),
+    );
+    yield delay(1000);
+    fetchStoriesItemsSaga();
+  }
+}
+
+export function* fetchStoriesItemsWatcherSaga() {
+  yield takeEvery(
+    timelineConstants.FETCH_USER_STORIES_REQUEST,
+    fetchStoriesItemsSaga,
+  );
+}
+
+/**
+ * @description Saga for marking story as seen
+ * @type Redux saga generator function
+ */
+
+const markAsSeenStoryService = async (story) => {
+  try {
+    const response = await api.post('/story-seen', {story});
+    return { response: response.data };
+  } catch (error) {
+    return { error };
+  }
+};
+
+function* markAsSeenStorySaga(action) {
+  const { response, error } = yield call(
+    markAsSeenStoryService,
+    action.payload,
+  );
+  if (response) {
+    yield put(
+      yield call(
+        success,
+        timelineConstants.MARK_AS_SEEN_STORY_SUCCESS,
+        response,
+      ),
+    );
+  } else {
+    yield put(
+      yield call(failure, timelineConstants.MARK_AS_SEEN_STORY_FAILURE, error),
+    );
+    yield delay(1000);
+    markAsSeenStorySaga();
+  }
+}
+
+export function* markAsSeenStoryWatcherSaga() {
+  yield takeEvery(
+    timelineConstants.MARK_AS_SEEN_STORY_REQUEST,
+    markAsSeenStorySaga,
+  );
+}

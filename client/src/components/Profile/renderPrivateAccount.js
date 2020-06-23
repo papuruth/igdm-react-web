@@ -59,7 +59,7 @@ export const RenderPrivateAccount = ({
         </PrivateAccountBoxWrapper>
       )}
       {userHighlightsData.length > 0 && <RenderUserHighlights userHighlightsData={userHighlightsData} />}
-      {suggestedUserData && (showPrivate || privateUser) && (
+      {suggestedUserData && showPrivate && (
         <PrivateAccountSuggestedUserWrapper>
           <PrivateAccountSuggestedUserContent>
             <SuggestionForYouDiv>

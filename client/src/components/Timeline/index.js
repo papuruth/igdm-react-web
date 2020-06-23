@@ -3,11 +3,12 @@ import { ReactComponent as Comment } from '@/assets/images/comment.svg';
 import { ReactComponent as Like } from '@/assets/images/Like.svg';
 import { ReactComponent as SharePost } from '@/assets/images/SharePost.svg';
 import { ReactComponent as Unlike } from '@/assets/images/Unlike.svg';
+import RenderStories from '@/containers/RenderStories';
 import {
-  likeMediaAction,
+  fetchUserReelAction, likeMediaAction,
   mediaCommentAction,
   timelineAction,
-  unlikeMediaAction,
+  unlikeMediaAction
 } from '@/redux/timeline/timelineAction';
 import { changeGreetingFlagAction } from '@/redux/user/userAction';
 import Toast from '@/utils/toast';
@@ -24,6 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import { AccountCircle, BookmarkBorder, MoreHoriz } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
 import clsx from 'clsx';
+import _ from 'lodash';
 import * as moment from 'moment';
 import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -35,32 +37,39 @@ import BigPlayButton from 'video-react/lib/components/BigPlayButton';
 import ControlBar from 'video-react/lib/components/control-bar/ControlBar';
 import Shortcut from 'video-react/lib/components/Shortcut';
 import {
+  BlankDIV,
+  IGDMFooterAnchor,
+  IGDMFooterCopyright,
+  IGDMFooterLI,
+  IGDMFooterNAV,
+  IGDMFooterSpan,
+  IGDMFooterUL,
+  IGDMFooterWrapper,
   StoriesReelCarouselButton,
   StoriesReelCarouselItemCanvas,
+  StoriesReelCarouselItemCaptionDiv,
   StoriesReelCarouselItemContentDiv,
+  StoriesReelCarouselItemImageWrapperSpan,
   StoriesReelCarouselItemImg,
   StoriesReelCarouselItemWrapperDiv,
   StoriesReelContentContainerDiv,
   StoriesReelWrapperContainerDiv,
   StyledContainer,
   TimelineSection,
-  UserSuggestionSection,
-  StoriesReelCarouselItemImageWrapperSpan,
-  StoriesReelCarouselItemCaptionDiv,
-  UserSuggestionProfileWrapper,
   UserSuggestionFullname,
   UserSuggestionProfileContent,
   UserSuggestionProfileImage,
-  UserSuggestionProfileImageAnchor,
-  UserSuggestionProfileImageCanvas,
-  UserSuggestionProfileImageIMG,
-  UserSuggestionUsernameContent,
-  UserSuggestionUsernameAnchor,
-  UserSuggestionUsernameWrapper,
+
+
+  UserSuggestionProfileImageIMG, UserSuggestionProfileImageSpan,
+
+
+  UserSuggestionProfileWrapper,
+  UserSuggestionSection,
   UserSuggestionSuggestedUserContent,
-  UserSuggestionSuggestedUserContentWrapper,
   UserSuggestionSuggestedUserContent1,
   UserSuggestionSuggestedUserContent2,
+  UserSuggestionSuggestedUserContentWrapper,
   UserSuggestionSuggestedUserHeading,
   UserSuggestionSuggestedUserHeadingAnchor,
   UserSuggestionSuggestedUserHeadingAnchorContent,
@@ -81,21 +90,15 @@ import {
   UserSuggestionSuggestedUserMainDIV2UnameWrapper,
   UserSuggestionSuggestedUserMainDIV2Utype,
   UserSuggestionSuggestedUserMainDIV2UtypeDIV1,
+  UserSuggestionSuggestedUserMainDIV2Verified,
   UserSuggestionSuggestedUserMainDIV3,
   UserSuggestionSuggestedUserMainDIV3Btn,
   UserSuggestionSuggestedUserWrapper,
-  IGDMFooterAnchor,
-  IGDMFooterLI,
-  IGDMFooterNAV,
-  IGDMFooterUL,
-  IGDMFooterWrapper,
-  IGDMFooterSpan,
-  IGDMFooterCopyright,
-  UserSuggestionSuggestedUserMainDIV2Verified,
-  Verified,
-  BlankDIV,
+  UserSuggestionUsernameAnchor,
+  UserSuggestionUsernameContent,
+  UserSuggestionUsernameWrapper,
+  Verified
 } from './styles';
-
 import './timeline.css';
 
 const useStyles = (theme) => ({
@@ -214,6 +217,8 @@ class Timeline extends React.Component {
       winWidth: window.innerWidth,
       captionLessId: '',
       commentText: '',
+      mountStories: false,
+      storyUserId: '',
     };
     this.newShortcuts = [
       // Press number 1 to jump to the postion of 10%
@@ -425,6 +430,23 @@ class Timeline extends React.Component {
     });
   };
 
+  renderStories = (storyUserId, ranked_position, storyIndex) => {
+    this.setState({
+      mountStories: true,
+      storyPosition: ranked_position,
+      storyUserId,
+      storyIndex,
+    });
+  };
+
+  closeStoryContainer = () => {
+    this.setState({
+      mountStories: false,
+    });
+    const { dispatch } = this.props;
+    dispatch(fetchUserReelAction());
+  };
+
   render() {
     const {
       data,
@@ -445,6 +467,10 @@ class Timeline extends React.Component {
       captionFullId,
       captionLessId,
       winWidth,
+      mountStories,
+      storyUserId,
+      storyPosition,
+      storyIndex,
     } = this.state;
     const timelineMediaResponsive = {
       desktop: {
@@ -476,6 +502,10 @@ class Timeline extends React.Component {
     };
     const storiesArray = winWidth > 600 ? Array(8).fill(0) : Array(4).fill(0);
     const suggestedUserArray = Array(5).fill(0);
+    const userLoggedInStory =
+      userReels.length > 0 && user.pk === userReels[0].user.pk
+        ? userReels[0]
+        : '';
     return (
       <StyledContainer
         style={{ maxWidth: `${winWidth < 1000 ? '600px' : '935px'}` }}>
@@ -484,38 +514,57 @@ class Timeline extends React.Component {
             <StoriesReelContentContainerDiv>
               {userReels.length > 0 ? (
                 <Carousel
-                  slidesToSlide={3}
+                  slidesToSlide={5}
                   responsive={userReelResponsive}
                   containerClass="carousel-container"
                   removeArrowOnDeviceType={['tablet', 'mobile']}
                   dotListClass="custom-dot-list-style"
                   itemClass="carousel-item-padding-40-px">
-                  {userReels.map(({ _items, id, user, seen }) => {
-                    const { profile_pic_url, username } = user;
-                    return (
-                      <StoriesReelCarouselItemWrapperDiv key={id}>
-                        <StoriesReelCarouselButton role="menuitem" tabIndex="0">
-                          <StoriesReelCarouselItemContentDiv>
-                            {!seen ? <StoriesReelCarouselItemCanvas /> : null}
-                            <StoriesReelCarouselItemImageWrapperSpan
-                              aria-label="Open Stories"
-                              role="button"
-                              tabIndex="0">
-                              <StoriesReelCarouselItemImg
-                                src={profile_pic_url}
-                                alt="cover media"
-                              />
-                            </StoriesReelCarouselItemImageWrapperSpan>
-                          </StoriesReelCarouselItemContentDiv>
-                          <StoriesReelCarouselItemCaptionDiv
+                  {userReels
+                    .slice(2)
+                    .map(({ id, user, seen, ranked_position, items }) => {
+                      const storyIndex =
+                        seen && items
+                          ? _.findIndex(items, ['taken_at', seen])
+                          : 0;
+                      const { profile_pic_url, username } = user;
+                      return (
+                        <StoriesReelCarouselItemWrapperDiv key={id}>
+                          <StoriesReelCarouselButton
                             role="menuitem"
-                            tabIndex="0">
-                            {username}
-                          </StoriesReelCarouselItemCaptionDiv>
-                        </StoriesReelCarouselButton>
-                      </StoriesReelCarouselItemWrapperDiv>
-                    );
-                  })}
+                            tabIndex="0"
+                            onClick={() =>
+                              this.renderStories(
+                                user.pk,
+                                ranked_position,
+                                storyIndex,
+                              )
+                            }>
+                            <StoriesReelCarouselItemContentDiv>
+                              <StoriesReelCarouselItemCanvas
+                                borderColor={
+                                  seen !== items[items.length - 1].taken_at
+                                }
+                              />
+                              <StoriesReelCarouselItemImageWrapperSpan
+                                aria-label="Open Stories"
+                                role="button"
+                                tabIndex="0">
+                                <StoriesReelCarouselItemImg
+                                  src={profile_pic_url}
+                                  alt="cover media"
+                                />
+                              </StoriesReelCarouselItemImageWrapperSpan>
+                            </StoriesReelCarouselItemContentDiv>
+                            <StoriesReelCarouselItemCaptionDiv
+                              role="menuitem"
+                              tabIndex="0">
+                              {username}
+                            </StoriesReelCarouselItemCaptionDiv>
+                          </StoriesReelCarouselButton>
+                        </StoriesReelCarouselItemWrapperDiv>
+                      );
+                    })}
                 </Carousel>
               ) : (
                 <Carousel
@@ -927,22 +976,39 @@ class Timeline extends React.Component {
             <UserSuggestionProfileWrapper>
               <UserSuggestionProfileContent>
                 <UserSuggestionProfileImage role="button" tabIndex="0">
-                  <UserSuggestionProfileImageCanvas height="66" width="66" />
-                  <UserSuggestionProfileImageAnchor href={`/${user.username}`}>
+                  <StoriesReelCarouselItemCanvas
+                    borderColor={
+                      userLoggedInStory &&
+                      userLoggedInStory.seen !==
+                        userLoggedInStory.items[
+                          userLoggedInStory.items.length - 1
+                        ].taken_at
+                    }
+                  />
+                  <UserSuggestionProfileImageSpan>
                     <UserSuggestionProfileImageIMG
                       alt="papuruth's profile"
                       src={user.profile_pic_url}
+                      onClick={() =>
+                        this.renderStories(
+                          userLoggedInStory.user.pk,
+                          userLoggedInStory.ranked_position,
+                          storyIndex,
+                        )
+                      }
                     />
-                  </UserSuggestionProfileImageAnchor>
+                  </UserSuggestionProfileImageSpan>
                 </UserSuggestionProfileImage>
                 <UserSuggestionUsernameWrapper>
                   <UserSuggestionUsernameContent>
-                    <UserSuggestionUsernameAnchor href="/papuruth/">
+                    <UserSuggestionUsernameAnchor href={`/${user.username}`}>
                       {user.username}
                     </UserSuggestionUsernameAnchor>
                   </UserSuggestionUsernameContent>
                   {user.full_name && (
-                    <UserSuggestionFullname>{`/${user.full_name}`}</UserSuggestionFullname>
+                    <UserSuggestionFullname>
+                      {user.full_name}
+                    </UserSuggestionFullname>
                   )}
                 </UserSuggestionUsernameWrapper>
               </UserSuggestionProfileContent>
@@ -1034,7 +1100,8 @@ class Timeline extends React.Component {
                               ),
                             )
                         : suggestedUserArray.map((num, index) => (
-                            <UserSuggestionSuggestedUserMainDIV key={'SuggestedUserSkeleton'.concat(index)}>
+                            <UserSuggestionSuggestedUserMainDIV
+                              key={'SuggestedUserSkeleton'.concat(index)}>
                               <UserSuggestionSuggestedUserMainDIV1>
                                 <UserSuggestionSuggestedUserMainDIV1Content
                                   role="button"
@@ -1154,6 +1221,15 @@ class Timeline extends React.Component {
               <IGDMFooterCopyright>© 2020 IGDM React</IGDMFooterCopyright>
             </IGDMFooterWrapper>
           </UserSuggestionSection>
+        )}
+        {mountStories && (
+          <RenderStories
+            closeStoryContainer={this.closeStoryContainer}
+            storyUserId={storyUserId}
+            storyPosition={storyPosition}
+            currentIndex={storyIndex}
+            userReels={userReels}
+          />
         )}
       </StyledContainer>
     );

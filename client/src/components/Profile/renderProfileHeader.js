@@ -17,10 +17,11 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import { ArrowDropDown, MoreHoriz, Settings } from '@material-ui/icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FadeLoader } from 'react-spinners';
 import './profile.component.css';
 import { Link } from 'react-router-dom';
+import { getUnfollowersAction } from '@/redux/chats/chatsAction';
 import {
   accountDetaildFollowDownBtnWrapper,
   accountDetailsConfigWrapper,
@@ -53,6 +54,7 @@ import {
   ProfilePhotoLoaderDiv,
   profilePicInput,
 } from './styles';
+import { renderUnfollowers } from '../DirectMessage/rendererFunction';
 
 const useStyles = makeStyles((_theme) => ({
   avatar: {
@@ -92,6 +94,7 @@ export const RenderProfileHeader = ({
   dispatch,
   profilePhotoLoader,
   showHideUserSuggestion,
+  unfollowers,
 }) => {
   const {
     pk,
@@ -140,7 +143,14 @@ export const RenderProfileHeader = ({
   let uploadInputRef;
   const [showProfileChangeDialog, setProfileChangeDialog] = useState(false);
   const [showSettingChangeDialog, setSettingChangeDialog] = useState(false);
-  const [showUserSuggestion, setUserSuggestion] = useState(true);
+  const [showUserSuggestion, setUserSuggestion] = useState(!!privateUser);
+
+  useEffect(() => {
+    if (unfollowers) {
+      renderUnfollowers(unfollowers, dispatch);
+    }
+  }, [unfollowers]);
+
   const openProfileChanger = () => {
     if (!has_anonymous_profile_picture) {
       setProfileChangeDialog(true);
@@ -186,6 +196,12 @@ export const RenderProfileHeader = ({
   const handleLogout = () => {
     setSettingChangeDialog(false);
     dispatch(userLogout(user.full_name || user.username));
+  };
+
+  const handleNonFollowers = () => {
+    dispatch(getUnfollowersAction());
+    renderUnfollowers('loading');
+    setSettingChangeDialog(false);
   };
 
   const showHidePrivateArea = () => {
@@ -380,6 +396,18 @@ export const RenderProfileHeader = ({
                   />
                 </ListItem>
                 <ListItem
+                  button
+                  onClick={handleNonFollowers}
+                  className={classes.listTxtBorder}
+                  key="NonFollowers">
+                  <ListItemText
+                    primary="Users Not Following"
+                    classes={{
+                      primary: classes.listTxtRemove,
+                    }}
+                  />
+                </ListItem>
+                <ListItem
                   autoFocus
                   button
                   onClick={closeSettingChanger}
@@ -441,7 +469,11 @@ export const RenderProfileHeader = ({
           </span>
           {external_url && (
             <span>
-              <a href={external_url} target="_blank" rel="noopener noreferrer" css={{color: '#007bff!important;', fontWeight: 600}}>
+              <a
+                href={external_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                css={{ color: '#007bff!important;', fontWeight: 600 }}>
                 {external_url}
               </a>
             </span>

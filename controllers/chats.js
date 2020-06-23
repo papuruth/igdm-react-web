@@ -286,4 +286,41 @@ exports.userReel = async (req, res) => {
   } catch (error) {
     res.status(400).send(error.message);
   }
-}
+};
+
+exports.markAsSeenStory = async (req, res) => {
+  try {
+    const { story } = req.body;
+    const { taken_at, id, user } = story;
+    const storyObj = {
+      taken_at,
+      id,
+      user: {
+        pk: user.pk,
+      },
+    };
+    const response = await instagram.markAsSeenStory(storyObj);
+    res.status(200).send(response);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+};
+
+exports.directInboxRecords = async (req, res) => {
+  try {
+    const response = await instagram.directInboxRecords();
+    res.status(200).send(response);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+};
+
+exports.pendingInboxRecords = async (req, res) => {
+  try {
+    const response = await instagram.pendingInboxRecords();
+    res.status(200).send(response);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+};

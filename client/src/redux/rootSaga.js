@@ -31,6 +31,8 @@ import {
   unsendMessageWatcherSaga,
   getUnfollowersWatcherSaga,
   unfollowUserWatcherSaga,
+  directInboxRecordsWatcherSaga,
+  pendingInboxRequestsWatcherSaga,
 } from './chats/chatsSaga';
 import {
   fetchTimelineWatcherSaga,
@@ -39,6 +41,8 @@ import {
   mediaCommentWatcherSaga,
   fetchUserReelWatcherSaga,
   fetchSuggestedUserWatcherSaga,
+  fetchStoriesItemsWatcherSaga,
+  markAsSeenStoryWatcherSaga,
 } from './timeline/timelineSaga';
 import { loaderWatcherSaga } from './Loader/loaderSaga';
 
@@ -80,5 +84,9 @@ export default function* rootSaga() {
     mediaCommentWatcherSaga(),
     fetchUserReelWatcherSaga(),
     fetchSuggestedUserWatcherSaga(),
+    fetchStoriesItemsWatcherSaga(),
+    markAsSeenStoryWatcherSaga(),
+    directInboxRecordsWatcherSaga(),
+    pendingInboxRequestsWatcherSaga(),
   ]);
 }

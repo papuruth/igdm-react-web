@@ -32,12 +32,17 @@ router.get('/user-info', userController.getFullUserInfo);
 router.get('/search-exact', userController.searchExact);
 router.post('/update-profile-photo', userController.updateUserProfilePhoto);
 router.post('/remove-profile-photo', userController.removeUserProfilePhoto);
-router.get('/current-user', userController.getCurrentUser)
-router.post('/save-profile', userController.saveProfile)
+router.get('/current-user', userController.getCurrentUser);
+router.post('/save-profile', userController.saveProfile);
 router.post('/like-timeline-media', chatController.likeTimelineMedia);
 router.post('/unlike-timeline-media', chatController.unlikeTimelineMedia);
-router.post('/media-comment', chatController.postComment)
+router.post('/media-comment', chatController.postComment);
 router.get('/user-reel', chatController.userReel);
-router.get('/suggested_user', userController.fetchSuggestedUser)
+router.get('/suggested_user', userController.fetchSuggestedUser);
+router.get('/user-stories', userController.fetchUserStories);
+router.post('/story-seen', chatController.markAsSeenStory);
+router.get('/direct-records', chatController.directInboxRecords);
+router.get('/pending-records', chatController.pendingInboxRecords);
+
 router.post('/test', instagram.test);
 module.exports = router;

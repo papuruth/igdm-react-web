@@ -2,6 +2,7 @@ import { loaderConstants } from './loaderConstants';
 
 const initialState = {
   profilePhotoLoader: false,
+  pendingRequestLoader: false,
 };
 
 export default function loaderReducer(state = initialState, action) {

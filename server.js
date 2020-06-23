@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 const http = require('http');
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -12,7 +13,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const routes = require('./routes/index');
 const instagram = require('./controllers/instagram');
-require('dotenv').config();
 
 const app = express();
 
@@ -31,6 +31,9 @@ function expressServer() {
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
   app.use(express.static(path.join(__dirname, './client/build')));
+
+
+  // ===== App Routing ====
   app.use('/', routes);
 
   /**

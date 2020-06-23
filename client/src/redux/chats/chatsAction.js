@@ -105,3 +105,11 @@ export const unfollowUserAction = (userId) => ({
   type: chatsConstants.UNFOLLOW_USER_REQUEST,
   payload: userId,
 });
+
+export const directInboxRecordsAction = () => ({
+  type: chatsConstants.FETCH_DIRECT_INBOX_RECORDS_REQUEST,
+});
+
+export const pendingInboxRequestsAction = () => ({
+  type: chatsConstants.FETCH_PENDING_INBOX_REQUEST,
+});

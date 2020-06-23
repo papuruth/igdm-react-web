@@ -8,25 +8,52 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
-import closeIcon from '@/assets/images/close.png';
 import instaIcon from '@/assets/images/icon.png';
-import ChatBox from '@/containers/ChatBox';
-import { fetchChatListAction, fileUploadAction, getSingleChatAction, getUnfollowersAction, searchUser, sendAudioAction, sendMessageAction, showLoaderAction } from '@/redux/chats/chatsAction';
+import {
+  fetchChatListAction,
+  fileUploadAction,
+  getSingleChatAction,
+  searchUser,
+  sendAudioAction,
+  sendMessageAction,
+  showLoaderAction
+} from '@/redux/chats/chatsAction';
+import history from '@/routes/history';
 import Toast from '@/utils/toast';
 import { Button } from '@material-ui/core';
-import { CameraAlt, Close, InsertEmoticon, Mic, Pause, PlayArrow, Send, Stop } from '@material-ui/icons';
+import {
+  CameraAlt,
+  Close,
+  InsertEmoticon,
+  Mic,
+  Pause,
+  PlayArrow,
+  Send,
+  Stop
+} from '@material-ui/icons';
 import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete';
 import { emojiIndex, Picker } from 'emoji-mart';
 import 'emoji-mart/css/emoji-mart.css';
 import React from 'react';
 import AudioAnalyser from 'react-audio-analyser';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { Helmet } from 'react-helmet';
-import { isActive, markAsRead, scrollToChatBottom, setActive } from './helperFunctions';
+import ClipLoader from 'react-spinners/ClipLoader';
+import ChatBox from './ChatBox';
+import './direct-message.css';
+import {
+  isActive,
+  markAsRead,
+  scrollToChatBottom,
+  setActive
+} from './helperFunctions';
 import { renderMessage, renderUnfollowers } from './rendererFunction';
 import RenderSearchResult from './renderSearchResult';
 import RenderUserList from './renderUserList';
-import { imageUploadCssLoader, renderUserListLoader, StyledContainer } from './styles';
+import {
+  imageUploadCssLoader,
+  renderUserListLoader,
+  StyledContainer
+} from './styles';
 
 class DirectMessage extends React.Component {
   constructor(props) {
@@ -249,12 +276,6 @@ class DirectMessage extends React.Component {
     window.currentChatId = chat_.pk || chat_.thread_id;
   };
 
-  closeModalViewer = (event) => {
-    event.preventDefault();
-    const viewer = document.querySelector('.viewer');
-    viewer.classList.remove('active');
-  };
-
   sendFile = () => {
     this.sendFileRef.click();
   };
@@ -344,13 +365,13 @@ class DirectMessage extends React.Component {
     }
   };
 
-  handleNonFollowers = () => {
-    const { dispatch } = this.props;
-    dispatch(getUnfollowersAction());
-    renderUnfollowers('loading');
+  fetchRequests = () => {
+    const {location} = this.props;
+    history.push('/direct/requests', {pending_requests_total: location.state.pending_requests_total});
   };
 
   render() {
+    console.log(this.props);
     const {
       renderChatFlag,
       chatsList,
@@ -363,12 +384,14 @@ class DirectMessage extends React.Component {
       messageText,
     } = this.state;
     const {
+      user,
       dispatch,
       imageUploadLoader,
       audioUploadLoader,
       chatLoader,
       searchUserResult,
       searchUserLoader,
+      location,
     } = this.props;
     const audioProps = {
       audioType: 'audio/wav', // Temporarily only supported audio/wav, default audio/webm
@@ -404,21 +427,32 @@ class DirectMessage extends React.Component {
           <div className="appBody">
             <div className="chat-list col-4">
               <div className="listStrapper row">
+                <div className="pending-request-wrapper">
+                  <div className="chatlist-title">Messages</div>
+                  {location.state.pending_requests_total && (
+                    <div
+                      className="pending-request-content"
+                      role="button"
+                      onClick={this.fetchRequests}
+                      tabIndex={0}>
+                      {`${location.state.pending_requests_total} Request`}
+                    </div>
+                  )}
+                </div>
                 <ul>
-                  {!searchText && chatsList.length > 0 ? (
+                  {!searchText && chatsList.length > 0 && (
                     <RenderUserList
                       dispatch={dispatch}
                       chatList={chatsList}
                       renderChat={this.renderChat}
                     />
-                  ) : (
-                    !searchUserLoader && (
-                      <RenderSearchResult
-                        dispatch={dispatch}
-                        usersList={searchUserResult}
-                        renderChat={this.renderChat}
-                      />
-                    )
+                  )}
+                  {!searchUserLoader && (
+                    <RenderSearchResult
+                      dispatch={dispatch}
+                      usersList={searchUserResult}
+                      renderChat={this.renderChat}
+                    />
                   )}
                   {(searchText || !chatsList.length) &&
                     (!searchUserResult.length || searchUserLoader) && (
@@ -433,7 +467,7 @@ class DirectMessage extends React.Component {
               </div>
             </div>
             <div className="chat col-8">
-              {chatLoader ? (
+              {chatLoader && (
                 <div className="messages row p-3 pt-5">
                   <ClipLoader
                     css={imageUploadCssLoader}
@@ -442,13 +476,16 @@ class DirectMessage extends React.Component {
                     loading={chatLoader}
                   />
                 </div>
-              ) : renderChatFlag && Object.keys(singleChat).length > 0 ? (
+              )}
+              {renderChatFlag && Object.keys(singleChat).length > 0 && (
                 <ChatBox
                   chatData={singleChat}
+                  user={user}
                   key={window.currentChatId}
                   dispatch={dispatch}
                 />
-              ) : (
+              )}
+              {!chatLoader && !renderChatFlag && (
                 <div className="messages row p-3 pt-5">
                   <div className="center cover">
                     <img src={instaIcon} width="300px" alt="" />
@@ -608,16 +645,6 @@ class DirectMessage extends React.Component {
               )}
             </div>
           </div>
-        </div>
-        <div className="viewer">
-          <button
-            className="close"
-            onKeyPress={this.closeModalViewer}
-            onClick={this.closeModalViewer}
-            type="submit">
-            <img width="25px" src={closeIcon} alt="close icon" />
-          </button>
-          <div className="viewer_content" />
         </div>
       </StyledContainer>
     );

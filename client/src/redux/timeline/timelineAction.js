@@ -28,5 +28,15 @@ export const fetchUserReelAction = () => ({
 
 export const fetchSuggestedUserAction = (userId) => ({
   type: timelineConstants.FETCH_SUGGESTED_USER_REQUEST,
-  payload: userId
+  payload: userId,
+});
+
+export const fetchStoriesItemsAction = (userId) => ({
+  type: timelineConstants.FETCH_USER_STORIES_REQUEST,
+  payload: userId,
+});
+
+export const markAsSeenStoryAction = (story) => ({
+  type: timelineConstants.MARK_AS_SEEN_STORY_REQUEST,
+  payload: story,
 });

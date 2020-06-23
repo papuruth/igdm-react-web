@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import { ReactComponent as SharePost } from '@/assets/images/SharePost.svg';
-import { searchUser, showLoaderAction } from '@/redux/chats/chatsAction';
+import {
+  searchUser,
+  showLoaderAction,
+  directInboxRecordsAction,
+} from '@/redux/chats/chatsAction';
 import { Avatar } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Badge from '@material-ui/core/Badge';
@@ -11,7 +15,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { Cancel, ExploreOutlined, FavoriteBorder, Home, Search } from '@material-ui/icons';
+import {
+  Cancel,
+  ExploreOutlined,
+  FavoriteBorder,
+  Home,
+  Search,
+} from '@material-ui/icons';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -100,6 +110,8 @@ class Header extends React.Component {
       mobileMoreAnchorEl: null,
       searchText: '',
     };
+    const { dispatch } = this.props;
+    dispatch(directInboxRecordsAction());
   }
 
   componentDidMount() {
@@ -179,7 +191,17 @@ class Header extends React.Component {
   };
 
   render() {
-    const { classes, searchUserResult, searchUserLoader, user } = this.props;
+    const {
+      classes,
+      searchUserResult,
+      searchUserLoader,
+      user,
+      directInboxRecords,
+    } = this.props;
+    const {
+      inbox,
+      pending_requests_total,
+    } = directInboxRecords;
     const { profile_pic_url, username } = user;
     const { mobileMoreAnchorEl, searchText } = this.state;
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -193,8 +215,7 @@ class Header extends React.Component {
         keepMounted
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         open={isMobileMenuOpen}
-        onClose={this.handleMobileMenuClose}
-      >
+        onClose={this.handleMobileMenuClose}>
         <MenuItem>
           <Link to="/">
             <IconButton aria-label="show 4 new mails" color="inherit">
@@ -204,9 +225,15 @@ class Header extends React.Component {
           </Link>
         </MenuItem>
         <MenuItem>
-          <Link to="/direct/inbox">
+          <Link
+            to={{
+              pathname: '/direct/inbox',
+              state: { pending_requests_total },
+            }}>
             <IconButton aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="secondary">
+              <Badge
+                badgeContent={inbox && inbox.unseen_count}
+                color="secondary">
                 <SharePost />
               </Badge>
             </IconButton>
@@ -235,13 +262,11 @@ class Header extends React.Component {
             to={{
               pathname: `/${username}`,
               state: user,
-            }}
-          >
+            }}>
             <IconButton
               aria-label="account of current user"
               aria-controls={menuId}
-              color="inherit"
-            >
+              color="inherit">
               <Avatar
                 className={classes.profileAvatar}
                 alt=""
@@ -258,7 +283,9 @@ class Header extends React.Component {
         <AppBar position="fixed" classes={{ colorPrimary: classes.appBarRoot }}>
           <Toolbar>
             <Typography className={classes.title} variant="h6" noWrap>
-              <Link to="/">IGDM-React</Link>
+              <Link to="/" onClick={this.resetTimeline}>
+                IGDM-React
+              </Link>
             </Typography>
             <div className={classes.search}>
               <div className={classes.searchIcon}>
@@ -297,8 +324,7 @@ class Header extends React.Component {
                 <div
                   ref={(search) => {
                     this.searchToggle = search;
-                  }}
-                >
+                  }}>
                   <div className="search-result-arrow" />
                   <div className="search-result-wrapper">
                     <div className="search-result-content">
@@ -318,13 +344,11 @@ class Header extends React.Component {
                               pathname: `/${username}`,
                               state: item,
                             }}
-                            onClick={this.clearSearch}
-                          >
+                            onClick={this.clearSearch}>
                             <div className="search-result-anchor-content">
                               <div
                                 className="search-result-avatar-wrapper"
-                                onContextMenu={(e) => e.preventDefault()}
-                              >
+                                onContextMenu={(e) => e.preventDefault()}>
                                 <canvas className="search-result-avatar-canvas" />
                                 <span className="search-result-avatar-content">
                                   <img
@@ -358,25 +382,31 @@ class Header extends React.Component {
             </div>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <Link to="/">
-                <IconButton aria-label="show 4 new mails" color="inherit">
+              <Link to="/" onClick={this.resetTimeline}>
+                <IconButton aria-label="home" color="inherit">
                   <Home />
                 </IconButton>
               </Link>
-              <Link to="/direct/inbox">
-                <IconButton aria-label="show 4 new mails" color="inherit">
-                  <Badge badgeContent={4} color="secondary">
+              <Link
+                to={{
+                  pathname: '/direct/inbox',
+                  state: { pending_requests_total },
+                }}>
+                <IconButton aria-label="direct-inbox" color="inherit">
+                  <Badge
+                    badgeContent={inbox && inbox.unseen_count}
+                    color="secondary">
                     <SharePost />
                   </Badge>
                 </IconButton>
               </Link>
               <Link to="/explore">
-                <IconButton aria-label="show 4 new mails" color="inherit">
+                <IconButton aria-label="explore" color="inherit">
                   <ExploreOutlined />
                 </IconButton>
               </Link>
               <Link to="/accounts/activity">
-                <IconButton aria-label="show 4 new mails" color="inherit">
+                <IconButton aria-label="news and notifications" color="inherit">
                   <FavoriteBorder />
                 </IconButton>
               </Link>
@@ -385,14 +415,12 @@ class Header extends React.Component {
                 to={{
                   pathname: `/${username}`,
                   state: user,
-                }}
-              >
+                }}>
                 <IconButton
                   edge="end"
                   aria-label="account of current user"
                   aria-controls={menuId}
-                  color="inherit"
-                >
+                  color="inherit">
                   <Avatar
                     className={classes.profileAvatar}
                     alt=""
@@ -407,8 +435,7 @@ class Header extends React.Component {
                 aria-controls={mobileMenuId}
                 aria-haspopup="true"
                 onClick={this.handleMobileMenuOpen}
-                color="inherit"
-              >
+                color="inherit">
                 <MoreIcon />
               </IconButton>
             </div>

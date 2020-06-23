@@ -190,6 +190,7 @@ button:focus {
 
 .chat-list ul {
   width: 100%;
+  margin-top: 15px;
   margin-bottom: 0;
 }
 
@@ -262,7 +263,6 @@ button:focus {
 }
 
 .chat-list .listStrapper div {
-  display: inline-block;
 }
 
 .chat-list .listStrapper .outward {
@@ -508,7 +508,7 @@ button:focus {
   background: transparent;
   opacity: 0.5;
   position: fixed;
-  top: 5px;
+  top: 80px;
   right: 10px;
   z-index: 10;
 }
@@ -682,8 +682,8 @@ textarea:disabled {
 }
 
 .listStrapper {
-  flex: 1 1;
   overflow-y: overlay;
+  flex-direction: column;
   background-color: #fcfcfc;
 }
 

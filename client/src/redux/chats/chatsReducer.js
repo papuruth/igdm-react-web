@@ -165,6 +165,26 @@ export default function chatReducer(state = {}, action) {
         ...state,
         unfollowError: action.error,
       };
+    case chatsConstants.FETCH_DIRECT_INBOX_RECORDS_SUCCESS:
+      return {
+        ...state,
+        directInboxRecords: action.payload,
+      };
+    case chatsConstants.FETCH_DIRECT_INBOX_RECORDS_FAILURE:
+      return {
+        ...state,
+        directInboxRecordsError: action.error,
+      };
+    case chatsConstants.FETCH_PENDING_INBOX_SUCCESS:
+      return {
+        ...state,
+        pendingInboxRecords: action.payload,
+      };
+    case chatsConstants.FETCH_PENDING_INBOX_FAILURE:
+      return {
+        ...state,
+        pendingInboxRecordsError: action.error,
+      };
     default:
       return { ...state };
   }

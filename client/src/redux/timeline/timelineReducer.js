@@ -5,6 +5,8 @@ const initialState = {
   timelines: [],
   userReels: [],
   suggestedUser: [],
+  userStoriesItems: [],
+  storyMarkedAsSeen: {},
   hasMore: false,
 };
 
@@ -18,6 +20,7 @@ export default function timelineReducer(state = initialState, action) {
       };
     case timelineConstants.FETCH_TIMELINE_FAILURE:
       return {
+        ...state,
         timelinesError: action.error,
       };
     case timelineConstants.LIKE_TIMELINE_MEDIA_SUCCESS: {
@@ -37,6 +40,7 @@ export default function timelineReducer(state = initialState, action) {
     }
     case timelineConstants.LIKE_TIMELINE_MEDIA_FAILURE:
       return {
+        ...state,
         likeMediaError: action.error,
       };
     case timelineConstants.UNLIKE_TIMELINE_MEDIA_SUCCESS: {
@@ -56,6 +60,7 @@ export default function timelineReducer(state = initialState, action) {
     }
     case timelineConstants.UNLIKE_TIMELINE_MEDIA_FAILURE:
       return {
+        ...state,
         unlikeMediaError: action.error,
       };
     case timelineConstants.MEDIA_COMMENT_SUCCESS: {
@@ -99,7 +104,32 @@ export default function timelineReducer(state = initialState, action) {
         ...state,
         suggestedUserError: action.error,
       };
+    case timelineConstants.FETCH_USER_STORIES_REQUEST:
+      return {
+        ...state,
+        userStoriesItems: [],
+      };
+    case timelineConstants.FETCH_USER_STORIES_SUCCESS:
+      return {
+        ...state,
+        userStoriesItems: action.payload,
+      };
+    case timelineConstants.FETCH_USER_STORIES_FAILURE:
+      return {
+        ...state,
+        userStoriesError: action.error,
+      };
+    case timelineConstants.MARK_AS_SEEN_STORY_SUCCESS:
+      return {
+        ...state,
+        storyMarkedAsSeen: action.payload,
+      };
+    case timelineConstants.MARK_AS_SEEN_STORY_FAILURE:
+      return {
+        ...state,
+        storyMarkedAsSeenError: action.error,
+      };
     default:
-      return state;
+      return { ...state };
   }
 }
