@@ -33,7 +33,7 @@
     "@material-ui/lab": "^4.0.0-alpha.53",
     "@webscopeio/react-textarea-autocomplete": "^4.6.3",
     "a11y-react-emoji": "^1.1.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "4.4.1",
     "clsx": "^1.1.0",
     "connected-react-router": "^6.8.0",
